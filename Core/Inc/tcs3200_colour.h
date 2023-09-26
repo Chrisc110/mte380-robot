@@ -17,8 +17,16 @@ typedef struct{
     GPIO_TypeDef* s3Port;   //Photodiode type selection bit 1
     uint16_t      s0Pin;
 
-    
+    TIM_HandleTypeDef* tim;
 
-}tcs3200_colour_t;
+    tsc3200_int_data_t intData;
+
+} tcs3200_colour_t;
+
+typedef struct{
+    uint16_t t1;
+    uint16_t t2;
+    uint16_t isFirst;
+} tsc3200_int_data_t;
 
 #endif /* TCS3200_COLOUR_H_ */
