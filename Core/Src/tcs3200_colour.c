@@ -128,19 +128,23 @@ tcs3200_status_e tcs3200_read(tcs3200_colour_handle_t* colSensor, uint16_t* freq
 
 tcs3200_status_e tcs3200_interrupt_handler(tcs3200_colour_handle_t* colSensor)
 {
-    //first rising edge
     TIM_HandleTypeDef* tim = colSensor->tim;
     uint32_t timChannel = colSensor->timChannel;
+
+    //the first rising edge
     if (colSensor->intData.isFirst)
     {
+        //save the ticks of the first rising edge
         get_ccr_register(tim, timChannel, &colSensor->intData.t1);
         colSensor->intData.isFirst = false;
     }
     else
     {
+        //save the ticks of the second rising edge
         get_ccr_register(tim, timChannel, &colSensor->intData.t2);
+        
         uint32_t ticks = 0;
-
+        //if there is NO overflow
         if (colSensor->intData.t2 > colSensor->intData.t1)
         {
             ticks = colSensor->intData.t2 - colSensor->intData.t1;
@@ -151,6 +155,7 @@ tcs3200_status_e tcs3200_interrupt_handler(tcs3200_colour_handle_t* colSensor)
             ticks = (colSensor->intData.t2 + 65535) -  colSensor->intData.t2;
         }
 
+        //based on the clock frequency and the number of ticks, calculate the square wave freqs
         colSensor->intData.freq = (double)CLK_FREQ / (double)ticks;
     } 
 
