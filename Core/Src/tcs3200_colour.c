@@ -6,6 +6,8 @@ static tcs3200_status_e tcs3200_set_green(tcs3200_colour_handle_t* colSensor);
 static tcs3200_status_e tcs3200_set_blue(tcs3200_colour_handle_t* colSensor);
 static tcs3200_status_e tcs3200_set_clear(tcs3200_colour_handle_t* colSensor);
 
+static tcs3200_status_e get_ccr_register(TIM_HandleTypeDef* tim, uint32_t timChannel, uint32_t* crrVal);
+
 /********************************/
 
 static tcs3200_status_e tcs3200_set_red(tcs3200_colour_handle_t* colSensor)
@@ -38,6 +40,31 @@ static tcs3200_status_e tcs3200_set_clear(tcs3200_colour_handle_t* colSensor)
     HAL_GPIO_WritePin(colSensor->s3Port, colSensor->s3Pin, 0);
 
     return TCS3200_NO_ERROR;
+}
+
+static tcs3200_status_e get_ccr_register(TIM_HandleTypeDef* tim, uint32_t timChannel, uint32_t* ccrVal)
+{
+    tcs3200_status_e status = TCS3200_NO_ERROR;
+
+    switch (timChannel) {
+        case TIM_CHANNEL_1:
+            ccrVal = (uint32_t)&tim->Instance->CCR1;
+            break;
+        case TIM_CHANNEL_2:
+            ccrVal = (uint32_t)&tim->Instance->CCR2;
+            break;
+        case TIM_CHANNEL_3:
+            ccrVal = (uint32_t)&tim->Instance->CCR3;
+            break;
+        case TIM_CHANNEL_4:
+            ccrVal = (uint32_t)&tim->Instance->CCR4;
+            break;
+        default:
+            status = TCS3200_INVALID_PARAMETER;
+            break;
+    }
+
+    return status;
 }
 
 
@@ -102,15 +129,30 @@ tcs3200_status_e tcs3200_read(tcs3200_colour_handle_t* colSensor, uint16_t* freq
 tcs3200_status_e tcs3200_interrupt_handler(tcs3200_colour_handle_t* colSensor)
 {
     //first rising edge
+    TIM_HandleTypeDef* tim = colSensor->tim;
+    uint32_t timChannel = colSensor->timChannel;
     if (colSensor->intData.isFirst)
     {
-        colSensor->intData.t1 = colSensor->tim->Instance->CCR1;
+        get_ccr_register(tim, timChannel, &colSensor->intData.t1);
+        colSensor->intData.isFirst = false;
     }
     else
     {
+        get_ccr_register(tim, timChannel, &colSensor->intData.t2);
+        uint32_t ticks = 0;
 
+        if (colSensor->intData.t2 > colSensor->intData.t1)
+        {
+            ticks = colSensor->intData.t2 - colSensor->intData.t1;
+        }
+        else
+        {
+            //account for overflow
+            ticks = (colSensor->intData.t2 + 65535) -  colSensor->intData.t2;
+        }
+
+        colSensor->intData.freq = (double)CLK_FREQ / (double)ticks;
     } 
-
 
     return TCS3200_NO_ERROR;
 }

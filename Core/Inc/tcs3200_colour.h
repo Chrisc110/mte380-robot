@@ -3,12 +3,15 @@
 
 #include "stm32f4xx_hal.h"
 #include "stdint.h"
+#include "stdbool.h"
+
+#define CLK_FREQ 64000000.0
 
 typedef struct{
     uint16_t t1;
     uint16_t t2;
-    uint16_t isFirst;
-    uint16_t freq;
+    bool isFirst;
+    double freq;
 } tcs3200_int_data_t;
 
 typedef struct{
