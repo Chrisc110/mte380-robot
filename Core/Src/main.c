@@ -95,7 +95,11 @@ int main(void)
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   RetargetInit(&huart2);
-  printf("*** System Initialization Complete! ***\r\n");
+  printf("***************************************\r\n");
+  printf("***    Welcome to Raw 380 Dawgs     ***\r\n");
+  printf("***************************************\r\n");
+
+  printf("*** System Initialization Complete! ***\r\n\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
