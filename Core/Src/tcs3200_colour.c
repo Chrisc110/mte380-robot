@@ -48,18 +48,19 @@ static tcs3200_status_e get_ccr_register(TIM_HandleTypeDef* tim, uint32_t timCha
 
     switch (timChannel) {
         case TIM_CHANNEL_1:
-            ccrVal = (uint32_t)&tim->Instance->CCR1;
+            *ccrVal = (uint32_t)tim->Instance->CCR1;
             break;
         case TIM_CHANNEL_2:
-            ccrVal = (uint32_t)&tim->Instance->CCR2;
+            *ccrVal = (uint32_t)tim->Instance->CCR2;
             break;
         case TIM_CHANNEL_3:
-            ccrVal = (uint32_t)&tim->Instance->CCR3;
+            *ccrVal = (uint32_t)tim->Instance->CCR3;
             break;
         case TIM_CHANNEL_4:
-            ccrVal = (uint32_t)&tim->Instance->CCR4;
+            *ccrVal = (uint32_t)tim->Instance->CCR4;
             break;
         default:
+            ccrVal = 0;
             status = TCS3200_INVALID_PARAMETER;
             break;
     }

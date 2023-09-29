@@ -8,8 +8,8 @@
 #define CLK_FREQ 64000000.0
 
 typedef struct{
-    uint16_t t1;
-    uint16_t t2;
+    uint32_t t1;
+    uint32_t t2;
     bool isFirst;
     double freq;
 } tcs3200_int_data_t;
