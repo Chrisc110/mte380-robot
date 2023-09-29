@@ -71,26 +71,35 @@ static tcs3200_status_e get_ccr_register(TIM_HandleTypeDef* tim, uint32_t timCha
 tcs3200_status_e tcs3200_init(tcs3200_colour_handle_t* colSensor)
 {
     //cube ide should have already initalized all the gpios, timers, and interrupts
-    HAL_TIM_IC_Start_IT(colSensor->tim, colSensor->timChannel);
-    return TCS3200_NO_ERROR;
+    return tsc3200_start(colSensor);
 }
 
 
 tcs3200_status_e tsc3200_start(tcs3200_colour_handle_t* colSensor)
 {
-    //check if the timer channel input capture interrupt is already enabled?
-    //enable the timer channel input capture interrupt
-    HAL_TIM_IC_Start_IT(colSensor->tim, colSensor->timChannel);
-    return TCS3200_NO_ERROR;
+    tcs3200_status_e status = TCS3200_NO_ERROR;
+
+    if (HAL_TIM_IC_Start_IT(colSensor->tim, colSensor->timChannel) != HAL_OK)
+    {
+        //print that we have an error
+        status = TCS3200_ERROR;
+    }
+
+    return status;
 }
 
 
 tcs3200_status_e tsc3200_stop(tcs3200_colour_handle_t* colSensor)
 {
-    //check if the timer channel input capture interrupt is already disabled?
-    //disable the timer channel input capture interrupt
-    HAL_TIM_IC_Stop_IT(colSensor->tim, colSensor->timChannel);
-    return TCS3200_NO_ERROR;
+    tcs3200_status_e status = TCS3200_NO_ERROR;
+
+    if (HAL_TIM_IC_Stop_IT(colSensor->tim, colSensor->timChannel) != HAL_OK)
+    {
+        //print that we have an error
+        status = TCS3200_ERROR;
+    }
+
+    return status;
 
 }
 
