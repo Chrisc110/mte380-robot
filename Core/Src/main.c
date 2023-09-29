@@ -91,7 +91,7 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   RetargetInit(&huart2);
-  printf("*** System Initialization Complete! ***\n");
+  printf("*** System Initialization Complete! ***\r\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
