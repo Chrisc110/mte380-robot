@@ -21,14 +21,14 @@ DRV8833::~DRV8833(){}
 
 void DRV8833::drive_forward(float speedPercent)
 {
-    analogWrite(_in1, MAX_DUTY_CYCLE);
-    analogWrite(_in2, MAX_DUTY_CYCLE * (speedPercent/100.0f));
+    analogWrite(_in1, MAX_DUTY_CYCLE * (speedPercent/100.0f));
+    analogWrite(_in2, 0);
 }
 
 void DRV8833::drive_reverse(float speedPercent)
 {
-    analogWrite(_in1, MAX_DUTY_CYCLE * (speedPercent/100.0f));
-    analogWrite(_in2, MAX_DUTY_CYCLE);
+    analogWrite(_in1, 0);
+    analogWrite(_in2, MAX_DUTY_CYCLE * (speedPercent/100.0f));
 }
 
 void DRV8833::stop()
