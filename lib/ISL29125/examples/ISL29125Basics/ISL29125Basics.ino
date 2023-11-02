@@ -22,17 +22,15 @@ Distributed as-is; no warranty is given.
 ******************************************************************************/
 
 #include <Wire.h>
-#include <ISL29125.h>
+#include "SparkFunISL29125.h"
 
 // Declare sensor object
-TwoWire wire(PC9, PA8);
-SFE_ISL29125 RGB_sensor(ISL_I2C_ADDR, wire);
+SFE_ISL29125 RGB_sensor;
 
 void setup()
 {
-  pinMode(LED_BUILTIN, OUTPUT);
   // Initialize serial communication
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   // Initialize the ISL29125 with simple configuration so it starts sampling
   if (RGB_sensor.init())
@@ -54,6 +52,5 @@ void loop()
   Serial.print("Green: "); Serial.println(green,HEX);
   Serial.print("Blue: "); Serial.println(blue,HEX);
   Serial.println();
-  digitalToggle(LED_BUILTIN);
-  delay(500);
+  delay(2000);
 }

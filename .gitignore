@@ -3,3 +3,7 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+.settings/
+.vscode/settings.json
+Debug/
+mte380-project Debug.launch
