@@ -112,7 +112,7 @@ Distributed as-is; no warranty is given.
 class SFE_ISL29125
 {
  public:
-  SFE_ISL29125(uint8_t addr = ISL_I2C_ADDR);
+  SFE_ISL29125(uint8_t addr, TwoWire wire);
   ~SFE_ISL29125();
 
   bool init();
@@ -132,6 +132,7 @@ class SFE_ISL29125
   
  private:
   uint8_t _addr;
+  TwoWire _wire;
   
   uint8_t read8(uint8_t reg);
   void write8(uint8_t reg, uint8_t data);

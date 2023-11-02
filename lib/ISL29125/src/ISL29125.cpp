@@ -19,9 +19,11 @@ Distributed as-is; no warranty is given.
 #include "ISL29125.h"
 
 // Constructor - Creates sensor object and sets I2C address
-SFE_ISL29125::SFE_ISL29125(uint8_t addr)
+SFE_ISL29125::SFE_ISL29125(uint8_t addr, TwoWire wire)
 {
   _addr = addr;
+
+  _wire = wire;
 }
 
 // Destructor - Deletes sensor object
@@ -41,7 +43,7 @@ bool SFE_ISL29125::init()
   uint8_t data = 0x00;
 
   // Start I2C
-  Wire.begin();
+  _wire.begin();
 
   // Check device ID
   data = read8(DEVICE_ID);

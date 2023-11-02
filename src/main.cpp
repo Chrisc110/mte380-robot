@@ -25,10 +25,12 @@ Distributed as-is; no warranty is given.
 #include <ISL29125.h>
 
 // Declare sensor object
-SFE_ISL29125 RGB_sensor;
+TwoWire wire(PC9, PA8);
+SFE_ISL29125 RGB_sensor(ISL_I2C_ADDR, wire);
 
 void setup()
 {
+  pinMode(LED_BUILTIN, OUTPUT);
   // Initialize serial communication
   Serial.begin(9600);
 
@@ -52,5 +54,6 @@ void loop()
   Serial.print("Green: "); Serial.println(green,HEX);
   Serial.print("Blue: "); Serial.println(blue,HEX);
   Serial.println();
+  digitalToggle(LED_BUILTIN);
   delay(500);
 }
