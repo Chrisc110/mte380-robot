@@ -24,6 +24,10 @@ float KalmanAngleRoll = 0, KalmanUncertaintyAngleRoll = 2 * 2;
 float KalmanAnglePitch = 0, KalmanUncertaintyAnglePitch = 2 * 2;
 float KalmanAngleYaw = 0, KalmanUncertaintyAngleYaw = 2 * 2;
 float Kalman1DOutput[] = {0, 0};
+
+static uint32_t lastReadTime = 0;
+static float theta = 0;
+
 void kalman_1d(float KalmanState, float KalmanUncertainty, float KalmanInput, float KalmanMeasurement)
 {
   KalmanState = KalmanState + 0.004 * KalmanInput;
@@ -64,7 +68,6 @@ void gyro_signals(void)
   int16_t GyroZ = Wire.read() << 8 | Wire.read();
   RateRoll = (float)GyroX / 65.5;
   RatePitch = (float)GyroY / 65.5;
-  RateYaw = (float)GyroZ / 65.5;
   RateYaw = (float)GyroZ / 65.5;
   AccX = (float)AccXLSB / 4096;
   AccY = (float)AccYLSB / 4096;
@@ -112,19 +115,21 @@ void loop()
   kalman_1d(KalmanAngleYaw, KalmanUncertaintyAngleYaw, RateYaw, AngleYaw);
   KalmanAngleYaw = Kalman1DOutput[0];
   KalmanUncertaintyAngleYaw = Kalman1DOutput[1];
-  // Print data every, for example, 1 second (adjust the delay time as needed)
-  static uint32_t lastPrintTime = 0;
-  if (millis() - lastPrintTime >= 500)
+
+  theta = (theta + RateYaw * 100.0f / 1000000.0f);
+
+  if (millis() - lastReadTime > 100)
   {
-    Serial.print("Roll Angle [°] ");
-    Serial.print(KalmanAngleRoll);
-    Serial.print(" Pitch Angle [°] ");
-    Serial.print(KalmanAnglePitch);
-    Serial.print(" Yaw Angle [°] ");
-    Serial.println(KalmanAngleYaw);
-    lastPrintTime = millis(); // Update the last print time
+    Serial.print("theta ");
+    Serial.println(theta*27.0f);
+    // Serial.print("Rate Yaw ");
+    // Serial.println(RateYaw);
+    lastReadTime = millis();
   }
-  while (micros() - LoopTimer < 4000)
-    ;
-  LoopTimer = micros();
+
+  delayMicroseconds(100);
+
+  // while (micros() - LoopTimer < 4000)
+  //   ;
+  // LoopTimer = micros();
 }
