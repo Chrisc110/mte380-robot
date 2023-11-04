@@ -1,18 +1,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-// void setup()
-// {
-//   pinMode(LED_BUILTIN, OUTPUT);
-// }
-
-// void loop()
-// {
-//   digitalWrite(LED_BUILTIN, HIGH); // turn the LED on (HIGH is the voltage level)
-//   delay(1000);                     // wait for a second
-//   digitalWrite(LED_BUILTIN, LOW);  // turn the LED off by making the voltage LOW
-//   delay(1000);
-// }
+#define YAW_SCALING_FACTOR 26.79f
 
 float RateRoll, RatePitch, RateYaw;
 float RateCalibrationRoll, RateCalibrationPitch, RateCalibrationYaw;
@@ -66,14 +55,7 @@ void gyro_signals(void)
   int16_t GyroX = Wire.read() << 8 | Wire.read();
   int16_t GyroY = Wire.read() << 8 | Wire.read();
   int16_t GyroZ = Wire.read() << 8 | Wire.read();
-  RateRoll = (float)GyroX / 65.5;
-  RatePitch = (float)GyroY / 65.5;
   RateYaw = (float)GyroZ / 65.5;
-  AccX = (float)AccXLSB / 4096;
-  AccY = (float)AccYLSB / 4096;
-  AccZ = (float)AccZLSB / 4096;
-  AngleRoll = atan(AccY / sqrt(AccX * AccX + AccZ * AccZ)) * 1 / (3.142 / 180);
-  AnglePitch = -atan(AccX / sqrt(AccY * AccY + AccZ * AccZ)) * 1 / (3.142 / 180);
 }
 void setup()
 {
@@ -90,46 +72,25 @@ void setup()
   for (RateCalibrationNumber = 0; RateCalibrationNumber < 2000; RateCalibrationNumber++)
   {
     gyro_signals();
-    RateCalibrationRoll += RateRoll;
-    RateCalibrationPitch += RatePitch;
     RateCalibrationYaw += RateYaw;
     delay(1);
   }
-  RateCalibrationRoll /= 2000;
-  RateCalibrationPitch /= 2000;
   RateCalibrationYaw /= 2000;
   LoopTimer = micros();
 }
 void loop()
 {
   gyro_signals();
-  RateRoll -= RateCalibrationRoll;
-  RatePitch -= RateCalibrationPitch;
   RateYaw -= RateCalibrationYaw;
-  kalman_1d(KalmanAngleRoll, KalmanUncertaintyAngleRoll, RateRoll, AngleRoll);
-  KalmanAngleRoll = Kalman1DOutput[0];
-  KalmanUncertaintyAngleRoll = Kalman1DOutput[1];
-  kalman_1d(KalmanAnglePitch, KalmanUncertaintyAnglePitch, RatePitch, AnglePitch);
-  KalmanAnglePitch = Kalman1DOutput[0];
-  KalmanUncertaintyAnglePitch = Kalman1DOutput[1];
-  kalman_1d(KalmanAngleYaw, KalmanUncertaintyAngleYaw, RateYaw, AngleYaw);
-  KalmanAngleYaw = Kalman1DOutput[0];
-  KalmanUncertaintyAngleYaw = Kalman1DOutput[1];
-
   theta = (theta + RateYaw * 100.0f / 1000000.0f);
 
   if (millis() - lastReadTime > 100)
   {
     Serial.print("theta ");
-    Serial.println(theta*27.0f);
-    // Serial.print("Rate Yaw ");
-    // Serial.println(RateYaw);
+    Serial.println(theta * YAW_SCALING_FACTOR);
+
     lastReadTime = millis();
   }
 
   delayMicroseconds(100);
-
-  // while (micros() - LoopTimer < 4000)
-  //   ;
-  // LoopTimer = micros();
 }
