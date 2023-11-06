@@ -70,29 +70,79 @@ void turn(float degrees, float speed1, float speed2)
     delayMicroseconds(100);
   }
 
+  digitalWrite(LED_BUILTIN, HIGH);
+
   // motor1.stop();
   // motor2.stop();
+}
+void check_red()
+{
+  digitalWrite(COL_SEN_RED, HIGH);
+  delay(1000);
+  unsigned int red1 = 0;
+  unsigned int red2 = 0;
+  for (int i = 0; i < 10; i++)
+  {
+    red1 += analogRead(COL_SEN_ADC_1);
+    red2 += analogRead(COL_SEN_ADC_2);
+  }
+  unsigned int redAverage1 = red1;
+  unsigned int redAverage2 = red2;
+  Serial.print("Red1avg: ");
+  Serial.println(redAverage1);
+  Serial.print("Red1: ");
+  Serial.println(red1);
+  Serial.print("Red2avg: ");
+  Serial.println(redAverage2);
+  Serial.print("Red2: ");
+  Serial.println(red2);
+  while (!((red1 - redAverage1 > 15) && (red2 - redAverage2 > 15)))
+  {
+    red1 = 0;
+    red2 = 0;
+    for (int i = 0; i < 10; i++)
+    {
+      red1 += analogRead(COL_SEN_ADC_1);
+      red2 += analogRead(COL_SEN_ADC_2);
+    }
+    redAverage1 = redAverage1 * 0.95 + red1 * 0.05;
+    redAverage2 = redAverage2 * 0.95 + red2 * 0.05;
+    Serial.print("Red1avg: ");
+    Serial.println(redAverage1);
+    Serial.print("Red1: ");
+    Serial.println(red1);
+    Serial.print("Red2avg: ");
+    Serial.println(redAverage2);
+    Serial.print("Red2: ");
+    Serial.println(red2);
+    delay(100);
+  }
+  digitalWrite(COL_SEN_RED, LOW);
 }
 
 void demoSequence()
 {
   // 1 - 78, 2- 80
-  // rampDrive(motor1, DRV8833_FORWARD, 0.0f, 68.0f, motor2, DRV8833_FORWARD, 0.0f, 70.0f);
+  rampDrive(motor1, DRV8833_REVERSE, 0.0f, 68.0f, motor2, DRV8833_REVERSE, 0.0f, 70.5f);
+
   // delay(2000);
 
   // detect red
+  Serial.println("Colour test");
+  check_red();
+  Serial.println("test done");
 
   // Do 360 turn
-  turn(90.0f, 68.0f, 70.0f);
+  turn(360.0f, 68.0f, 70.5f);
   motor1.stop();
   motor2.stop();
 
   // drive backwards
-  // rampDrive(motor1, DRV8833_REVERSE, 0.0f, 68.0f, motor2, DRV8833_REVERSE, 0.0f, 70.0f);
-}
+  rampDrive(motor1, DRV8833_FORWARD, 0.0f, 68.0f, motor2, DRV8833_FORWARD, 0.0f, 70.5f);
 
-void check_red()
-{
+  delay(2000);
+  motor1.stop();
+  motor2.stop();
 }
 
 void setup()
@@ -121,6 +171,15 @@ void setup()
   {
     Serial.println("Colour Sensor 2 Initialization: FAILED");
   }
+
+  pinMode(COL_SEN_ADC_1, INPUT);
+  pinMode(COL_SEN_ADC_2, INPUT);
+  pinMode(COL_SEN_RED, OUTPUT);
+  pinMode(COL_SEN_GREEN, OUTPUT);
+  pinMode(COL_SEN_BLUE, OUTPUT);
+  digitalWrite(COL_SEN_RED, LOW);
+  digitalWrite(COL_SEN_GREEN, LOW);
+  digitalWrite(COL_SEN_BLUE, LOW);
 
   imu.init();
 
@@ -152,5 +211,5 @@ void loop()
     }
   }
 
-  digitalToggle(LED_BUILTIN);
+  // digitalToggle(LED_BUILTIN);
 }
