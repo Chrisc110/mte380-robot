@@ -26,29 +26,22 @@ Distributed as-is; no warranty is given.
 #include <drv8833.h>
 #include <MPU6050.h>
 #include "defines.h"
+#include "helpers.h"
 
-// Declare sensor object
+// Instantiate colour sensors
 TwoWire colSenWire1(COL_SEN_SDA_1, COL_SEN_SCL_1);
 TwoWire colSenWire2(COL_SEN_SDA_2, COL_SEN_SCL_2);
 SFE_ISL29125 colSen1(ISL_I2C_ADDR, colSenWire1);
 SFE_ISL29125 colSen2(ISL_I2C_ADDR, colSenWire2);
 
+// Instantiate motors
 DRV8833 motor1(MOTOR1_IN1, MOTOR1_IN2);
 DRV8833 motor2(MOTOR2_IN1, MOTOR2_IN2);
 
-bool isStop = true;
-void rampDrive(drv8833_dir_e dir, float finalSpeed1, float finalSpeed2)
-{
-  float step1 = finalSpeed1 / 50.0f;
-  float step2 = finalSpeed2 / 50.0f;
+// Instantiate IMU
+MPU6050 imu();
 
-  for(float i = 0.0; i < 50.0; i++)
-  {
-    motor1.drive(dir, step1*i);
-    motor2.drive(dir, step2*i);
-    delay(10);
-  }
-}
+bool isStop = true;
 
 
 void setup()
@@ -96,7 +89,7 @@ void loop()
       {
         isStop = false;
         delay(1000);
-        rampDrive(DRV8833_FORWARD, 78.0f, 80.0f);
+        rampDrive(motor1, DRV8833_FORWARD, 0.0f, 78.0f, motor2, DRV8833_FORWARD, 0.0f, 80.0f);
       }
       else
       {
