@@ -78,7 +78,8 @@ void setup()
   RateCalibrationYaw /= 2000;
   LoopTimer = micros();
 }
-void loop()
+
+void yawCalculations()
 {
   gyro_signals();
   RateYaw -= RateCalibrationYaw;
@@ -93,4 +94,8 @@ void loop()
   }
 
   delayMicroseconds(100);
+}
+void loop()
+{
+  yawCalculations();
 }
