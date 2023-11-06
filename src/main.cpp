@@ -23,37 +23,90 @@ Distributed as-is; no warranty is given.
 
 #include <Wire.h>
 #include <ISL29125.h>
+#include <drv8833.h>
+#include "defines.h"
 
 // Declare sensor object
-TwoWire wire(PC9, PA8);
-SFE_ISL29125 RGB_sensor(ISL_I2C_ADDR, wire);
+TwoWire colSenWire1(COL_SEN_SDA_1, COL_SEN_SCL_1);
+TwoWire colSenWire2(COL_SEN_SDA_2, COL_SEN_SCL_2);
+SFE_ISL29125 colSen1(ISL_I2C_ADDR, colSenWire1);
+SFE_ISL29125 colSen2(ISL_I2C_ADDR, colSenWire2);
+
+DRV8833 motor1(MOTOR1_IN1, MOTOR1_IN2);
+DRV8833 motor2(MOTOR2_IN1, MOTOR2_IN2);
+
+bool isStop = true;
+void rampDrive(drv8833_dir_e dir, float finalSpeed1, float finalSpeed2)
+{
+  float step1 = finalSpeed1 / 50.0f;
+  float step2 = finalSpeed2 / 50.0f;
+
+  for(float i = 0.0; i < 50.0; i++)
+  {
+    motor1.drive(dir, step1*i);
+    motor2.drive(dir, step2*i);
+    delay(10);
+  }
+}
+
 
 void setup()
 {
-  pinMode(LED_BUILTIN, OUTPUT);
   // Initialize serial communication
   Serial.begin(9600);
 
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(USER_BTN, INPUT);
+
   // Initialize the ISL29125 with simple configuration so it starts sampling
-  if (RGB_sensor.init())
+  if (colSen1.init())
   {
-    Serial.println("Sensor Initialization Successful\n\r");
+    Serial.println("Colour Sensor 1 Initialization: SUCCESSFUL");
   }
+  else
+  {
+    Serial.println("Colour Sensor 1 Initialization: FAILED");
+  }
+
+  if (colSen2.init())
+  {
+    Serial.println("Colour Sensor 2 Initialization: SUCCESSFUL");
+  }
+  else
+  {
+    Serial.println("Colour Sensor 2 Initialization: FAILED");
+  }
+
+  Serial.println("Motor 1 Initialization: SUCCESSFUL");
+  Serial.println("Motor 2 Initialization: SUCCESSFUL");
+
 }
 
 // Read sensor values for each color and print them to serial monitor
 void loop()
 {
-  // Read sensor values (16 bit integers)
-  unsigned int red = RGB_sensor.readRed();
-  unsigned int green = RGB_sensor.readGreen();
-  unsigned int blue = RGB_sensor.readBlue();
-  
-  // Print out readings, change HEX to DEC if you prefer decimal output
-  Serial.print("Red: "); Serial.println(red,HEX);
-  Serial.print("Green: "); Serial.println(green,HEX);
-  Serial.print("Blue: "); Serial.println(blue,HEX);
-  Serial.println();
+
+  if (digitalRead(USER_BTN) == 0)
+  {
+    delay(25);
+    if (digitalRead(USER_BTN) == 0)
+    {
+      if(isStop == true)
+      {
+        isStop = false;
+        delay(1000);
+        rampDrive(DRV8833_FORWARD, 78.0f, 80.0f);
+      }
+      else
+      {
+        isStop = true;
+        motor1.stop();
+        motor2.stop();
+        delay(750);
+      }
+    }
+  }
+
   digitalToggle(LED_BUILTIN);
-  delay(500);
+
 }
