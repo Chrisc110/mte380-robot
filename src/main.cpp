@@ -29,7 +29,7 @@ Distributed as-is; no warranty is given.
 #include "helpers.h"
 #include "math.h"
 
-#define YAW_SCALING_FACTOR 26.54
+#define YAW_SCALING_FACTOR 28.0
 
 // Instantiate colour sensors
 TwoWire colSenWire1(COL_SEN_SDA_1, COL_SEN_SCL_1);
@@ -70,8 +70,6 @@ void turn(float degrees, float speed1, float speed2)
     delayMicroseconds(100);
   }
 
-  digitalWrite(LED_BUILTIN, HIGH);
-
   // motor1.stop();
   // motor2.stop();
 }
@@ -96,7 +94,7 @@ void check_red()
   Serial.println(redAverage2);
   Serial.print("Red2: ");
   Serial.println(red2);
-  while (!((red1 - redAverage1 > 15) && (red2 - redAverage2 > 15)))
+  while (!((red1 > 20 + redAverage1) && (red2 > 20 + redAverage2)))
   {
     red1 = 0;
     red2 = 0;
@@ -122,27 +120,52 @@ void check_red()
 
 void demoSequence()
 {
-  // 1 - 78, 2- 80
-  rampDrive(motor1, DRV8833_REVERSE, 0.0f, 68.0f, motor2, DRV8833_REVERSE, 0.0f, 70.5f);
+  // // 1 - 78, 2- 80
+  // // rampDrive(motor1, DRV8833_REVERSE, 0.0f, 68.0f, motor2, DRV8833_REVERSE, 0.0f, 70.5f);
+  // motor1.drive(DRV8833_REVERSE, 68.0f);
+  // motor2.drive(DRV8833_REVERSE, 70.5f);
+
+  // // delay(2000);
+
+  // // detect red
+  // Serial.println("Colour test");
+  // check_red();
+  // Serial.println("test done");
+
+  // // drive backwards
+  // // rampDrive(motor1, DRV8833_FORWARD, 0.0f, 68.0f, motor2, DRV8833_FORWARD, 0.0f, 70.5f);
+  // motor1.drive(DRV8833_FORWARD, 68.0f);
+  // motor2.drive(DRV8833_FORWARD, 70.5f);
 
   // delay(2000);
 
-  // detect red
-  Serial.println("Colour test");
+  //  // Do 360 turn
+  // turn(360.0f, 68.0f, 70.5f);
+  // motor1.stop();
+  // motor2.stop();
+
+  motor1.drive(DRV8833_REVERSE, 68.0f);
+  motor2.drive(DRV8833_REVERSE, 70.5f);
+
   check_red();
-  Serial.println("test done");
 
-  // Do 360 turn
-  turn(360.0f, 68.0f, 70.5f);
-  motor1.stop();
-  motor2.stop();
+  turn(90.f, 68.0f, 70.5f);
 
-  // drive backwards
-  rampDrive(motor1, DRV8833_FORWARD, 0.0f, 68.0f, motor2, DRV8833_FORWARD, 0.0f, 70.5f);
+  motor1.drive(DRV8833_REVERSE, 68.0f);
+  motor2.drive(DRV8833_REVERSE, 70.5f);
+
+  check_red();
+
+  turn(-90.f, 68.0f, 70.5f);
+
+  motor1.drive(DRV8833_FORWARD, 68.0f);
+  motor2.drive(DRV8833_FORWARD, 70.5f);
 
   delay(2000);
+
   motor1.stop();
   motor2.stop();
+
 }
 
 void setup()
@@ -185,6 +208,7 @@ void setup()
 
   Serial.println("Motor 1 Initialization: SUCCESSFUL");
   Serial.println("Motor 2 Initialization: SUCCESSFUL");
+  digitalWrite(LED_BUILTIN, HIGH);
 }
 
 // Read sensor values for each color and print them to serial monitor
