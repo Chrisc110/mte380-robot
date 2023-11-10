@@ -151,12 +151,12 @@ void demoSequence()
 
   turn(90.f, 68.0f, 70.5f);
 
-  motor1.drive(DRV8833_REVERSE, 68.0f);
-  motor2.drive(DRV8833_REVERSE, 70.5f);
+  // motor1.drive(DRV8833_REVERSE, 68.0f);
+  // motor2.drive(DRV8833_REVERSE, 70.5f);
 
-  check_red();
+  // check_red();
 
-  turn(-90.f, 68.0f, 70.5f);
+  // turn(-90.f, 68.0f, 70.5f);
 
   motor1.drive(DRV8833_FORWARD, 68.0f);
   motor2.drive(DRV8833_FORWARD, 70.5f);
