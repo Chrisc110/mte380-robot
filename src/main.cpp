@@ -31,185 +31,75 @@ Distributed as-is; no warranty is given.
 
 #define YAW_SCALING_FACTOR 26.54
 
-// Instantiate colour sensors
-TwoWire colSenWire1(COL_SEN_SDA_1, COL_SEN_SCL_1);
-TwoWire colSenWire2(COL_SEN_SDA_2, COL_SEN_SCL_2);
-SFE_ISL29125 colSen1(ISL_I2C_ADDR, colSenWire1);
-SFE_ISL29125 colSen2(ISL_I2C_ADDR, colSenWire2);
+#include "stm32f4xx.h"
 
-// Instantiate motors
-DRV8833 motor1(MOTOR1_IN1, MOTOR1_IN2);
-DRV8833 motor2(MOTOR2_IN1, MOTOR2_IN2);
+// PID Constants
+float Kp = 1.0;  // Proportional gain
+float Ki = 0.1;  // Integral gain
+float Kd = 0.01; // Derivative gain
 
-// Instantiate IMU
-MPU6050 imu;
+// Variables
+float error = 0;
+float integral = 0;
+float previous_error = 0;
 
-bool isStop = true;
+// Setpoint (target sensor value)
+float setpoint = 500; // Adjust this to your desired setpoint
 
-void turn(float degrees, float speed1, float speed2)
+// Sample time (adjust as needed)
+float dt = 0.01; // 10ms sample time
+
+// Function to compute control output
+float PID_Controller(float sensor_value)
 {
-  MPU6050Data data;
-  float theta = 0;
-  uint32_t lastReadTime = 0;
-  drv8833_dir_e dir1 = degrees > 0 ? DRV8833_FORWARD : DRV8833_REVERSE;
-  drv8833_dir_e dir2 = degrees > 0 ? DRV8833_REVERSE : DRV8833_FORWARD;
-  motor1.drive(dir1, speed1);
-  motor2.drive(dir2, speed2);
+  error = setpoint - sensor_value;
 
-  while (abs(theta) * YAW_SCALING_FACTOR < abs(degrees))
-  {
-    imu.getAll(&data);
-    theta = (theta + data.gyroZ * 100.0f / 1000000.0f);
-    if (millis() - lastReadTime > 100)
-    {
-      Serial.print("theta ");
-      Serial.println(abs(theta * YAW_SCALING_FACTOR));
+  integral += error * dt;
 
-      lastReadTime = millis();
-    }
-    delayMicroseconds(100);
-  }
+  float derivative = (error - previous_error) / dt;
 
-  digitalWrite(LED_BUILTIN, HIGH);
+  float control_signal = Kp * error + Ki * integral + Kd * derivative;
 
-  // motor1.stop();
-  // motor2.stop();
-}
-void check_red()
-{
-  digitalWrite(COL_SEN_RED, HIGH);
-  delay(1000);
-  unsigned int red1 = 0;
-  unsigned int red2 = 0;
-  for (int i = 0; i < 10; i++)
-  {
-    red1 += analogRead(COL_SEN_ADC_1);
-    red2 += analogRead(COL_SEN_ADC_2);
-  }
-  unsigned int redAverage1 = red1;
-  unsigned int redAverage2 = red2;
-  Serial.print("Red1avg: ");
-  Serial.println(redAverage1);
-  Serial.print("Red1: ");
-  Serial.println(red1);
-  Serial.print("Red2avg: ");
-  Serial.println(redAverage2);
-  Serial.print("Red2: ");
-  Serial.println(red2);
-  while (!((red1 - redAverage1 > 15) && (red2 - redAverage2 > 15)))
-  {
-    red1 = 0;
-    red2 = 0;
-    for (int i = 0; i < 10; i++)
-    {
-      red1 += analogRead(COL_SEN_ADC_1);
-      red2 += analogRead(COL_SEN_ADC_2);
-    }
-    redAverage1 = redAverage1 * 0.95 + red1 * 0.05;
-    redAverage2 = redAverage2 * 0.95 + red2 * 0.05;
-    Serial.print("Red1avg: ");
-    Serial.println(redAverage1);
-    Serial.print("Red1: ");
-    Serial.println(red1);
-    Serial.print("Red2avg: ");
-    Serial.println(redAverage2);
-    Serial.print("Red2: ");
-    Serial.println(red2);
-    delay(100);
-  }
-  digitalWrite(COL_SEN_RED, LOW);
+  // Update previous error for the next iteration
+  previous_error = error;
+
+  return control_signal;
 }
 
-void demoSequence()
+// Function to read the sensor value (replace with your sensor reading code)
+float ReadSensor()
 {
-  // 1 - 78, 2- 80
-  rampDrive(motor1, DRV8833_REVERSE, 0.0f, 68.0f, motor2, DRV8833_REVERSE, 0.0f, 70.5f);
-
-  // delay(2000);
-
-  // detect red
-  Serial.println("Colour test");
-  check_red();
-  Serial.println("test done");
-
-  // Do 360 turn
-  turn(360.0f, 68.0f, 70.5f);
-  motor1.stop();
-  motor2.stop();
-
-  // drive backwards
-  rampDrive(motor1, DRV8833_FORWARD, 0.0f, 68.0f, motor2, DRV8833_FORWARD, 0.0f, 70.5f);
-
-  delay(2000);
-  motor1.stop();
-  motor2.stop();
+  // Read the sensor value and return it
+  // Replace this with your sensor reading code
+  // Example: return analogRead(A0);
+  // temporaility 
+  return 1.0f;
 }
 
-void setup()
+// Function to adjust the motor speed (replace with your motor control code)
+void AdjustMotorSpeed(float control_output)
 {
-  // Initialize serial communication
-  Serial.begin(9600);
-
-  pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(USER_BTN, INPUT);
-
-  // Initialize the ISL29125 with simple configuration so it starts sampling
-  if (colSen1.init())
-  {
-    Serial.println("Colour Sensor 1 Initialization: SUCCESSFUL");
-  }
-  else
-  {
-    Serial.println("Colour Sensor 1 Initialization: FAILED");
-  }
-
-  if (colSen2.init())
-  {
-    Serial.println("Colour Sensor 2 Initialization: SUCCESSFUL");
-  }
-  else
-  {
-    Serial.println("Colour Sensor 2 Initialization: FAILED");
-  }
-
-  pinMode(COL_SEN_ADC_1, INPUT);
-  pinMode(COL_SEN_ADC_2, INPUT);
-  pinMode(COL_SEN_RED, OUTPUT);
-  pinMode(COL_SEN_GREEN, OUTPUT);
-  pinMode(COL_SEN_BLUE, OUTPUT);
-  digitalWrite(COL_SEN_RED, LOW);
-  digitalWrite(COL_SEN_GREEN, LOW);
-  digitalWrite(COL_SEN_BLUE, LOW);
-
-  imu.init();
-
-  Serial.println("Motor 1 Initialization: SUCCESSFUL");
-  Serial.println("Motor 2 Initialization: SUCCESSFUL");
+  // Adjust the motor speed based on the control output
+  // Replace this with your motor control code
+  // Example: motorSpeed = baseSpeed + control_output * scaling_factor;
 }
 
-// Read sensor values for each color and print them to serial monitor
-void loop()
+
+int main(void)
 {
+  // Initialize the STM32F4 hardware here
 
-  if (digitalRead(USER_BTN) == 0)
+  // Main control loop
+  while (1)
   {
-    delay(100);
-    if (digitalRead(USER_BTN) == 0)
-    {
-      if (isStop == true)
-      {
-        isStop = false;
-        delay(1000);
-        demoSequence();
-      }
-      else
-      {
-        // isStop = true;
-        // motor1.stop();
-        // motor2.stop();
-      }
-    }
-  }
+    float sensor_value = ReadSensor();
 
-  // digitalToggle(LED_BUILTIN);
+    float control_output = PID_Controller(sensor_value);
+
+    AdjustMotorSpeed(control_output);
+
+    // Add a delay for the sample time
+    HAL_Delay(dt);
+  }
 }
+
