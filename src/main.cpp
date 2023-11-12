@@ -37,7 +37,7 @@ SFE_ISL29125 colSen2(ISL_I2C_ADDR, colSenWire2);
 
 void calibrateColours(SFE_ISL29125 colSen, bool isLow)
 {
-  const float MAX_ITERATIONS = 200;
+  const uint8_t MAX_ITERATIONS = 200;
   uint16_t current_calibration_val = 0;
   uint16_t intensity = 0;
 
