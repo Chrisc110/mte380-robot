@@ -29,120 +29,100 @@ Distributed as-is; no warranty is given.
 #include "helpers.h"
 #include "math.h"
 
-#define YAW_SCALING_FACTOR 26.54
-
 // Instantiate colour sensors
 TwoWire colSenWire1(COL_SEN_SDA_1, COL_SEN_SCL_1);
 TwoWire colSenWire2(COL_SEN_SDA_2, COL_SEN_SCL_2);
 SFE_ISL29125 colSen1(ISL_I2C_ADDR, colSenWire1);
 SFE_ISL29125 colSen2(ISL_I2C_ADDR, colSenWire2);
 
-// Instantiate motors
-DRV8833 motor1(MOTOR1_IN1, MOTOR1_IN2);
-DRV8833 motor2(MOTOR2_IN1, MOTOR2_IN2);
-
-// Instantiate IMU
-MPU6050 imu;
-
-bool isStop = true;
-
-void turn(float degrees, float speed1, float speed2)
+void calibrateColours(SFE_ISL29125 colSen, bool isLow)
 {
-  MPU6050Data data;
-  float theta = 0;
-  uint32_t lastReadTime = 0;
-  drv8833_dir_e dir1 = degrees > 0 ? DRV8833_FORWARD : DRV8833_REVERSE;
-  drv8833_dir_e dir2 = degrees > 0 ? DRV8833_REVERSE : DRV8833_FORWARD;
-  motor1.drive(dir1, speed1);
-  motor2.drive(dir2, speed2);
+  const float MAX_ITERATIONS = 200;
+  uint16_t current_calibration_val = 0;
+  uint16_t intensity = 0;
 
-  while (abs(theta) * YAW_SCALING_FACTOR < abs(degrees))
+  //red
+  for (uint8_t i = 0; i < MAX_ITERATIONS; i++)
   {
-    imu.getAll(&data);
-    theta = (theta + data.gyroZ * 100.0f / 1000000.0f);
-    if (millis() - lastReadTime > 100)
-    {
-      Serial.print("theta ");
-      Serial.println(abs(theta * YAW_SCALING_FACTOR));
-
-      lastReadTime = millis();
-    }
-    delayMicroseconds(100);
+    intensity = colSen.readRed();
+    if (isLow) {current_calibration_val = current_calibration_val < intensity ? current_calibration_val : intensity;}
+    else {current_calibration_val = current_calibration_val > intensity ? current_calibration_val : intensity;}
+    delay(1);
   }
+  Serial.print("Red: ");
+  Serial.println(current_calibration_val);
 
-  digitalWrite(LED_BUILTIN, HIGH);
-
-  // motor1.stop();
-  // motor2.stop();
-}
-void check_red()
-{
-  digitalWrite(COL_SEN_RED, HIGH);
-  delay(1000);
-  unsigned int red1 = 0;
-  unsigned int red2 = 0;
-  for (int i = 0; i < 10; i++)
+  //green
+  current_calibration_val = 0;
+  for (uint8_t i = 0; i < MAX_ITERATIONS; i++)
   {
-    red1 += analogRead(COL_SEN_ADC_1);
-    red2 += analogRead(COL_SEN_ADC_2);
+    intensity = colSen.readGreen();
+    if (isLow) {current_calibration_val = current_calibration_val < intensity ? current_calibration_val : intensity;}
+    else {current_calibration_val = current_calibration_val > intensity ? current_calibration_val : intensity;}
+    delay(1);
   }
-  unsigned int redAverage1 = red1;
-  unsigned int redAverage2 = red2;
-  Serial.print("Red1avg: ");
-  Serial.println(redAverage1);
-  Serial.print("Red1: ");
-  Serial.println(red1);
-  Serial.print("Red2avg: ");
-  Serial.println(redAverage2);
-  Serial.print("Red2: ");
-  Serial.println(red2);
-  while (!((red1 - redAverage1 > 15) && (red2 - redAverage2 > 15)))
+  Serial.print("Green: ");
+  Serial.println(current_calibration_val);
+
+  //blue
+  current_calibration_val = 0;
+  for (uint8_t i = 0; i < MAX_ITERATIONS; i++)
   {
-    red1 = 0;
-    red2 = 0;
-    for (int i = 0; i < 10; i++)
-    {
-      red1 += analogRead(COL_SEN_ADC_1);
-      red2 += analogRead(COL_SEN_ADC_2);
-    }
-    redAverage1 = redAverage1 * 0.95 + red1 * 0.05;
-    redAverage2 = redAverage2 * 0.95 + red2 * 0.05;
-    Serial.print("Red1avg: ");
-    Serial.println(redAverage1);
-    Serial.print("Red1: ");
-    Serial.println(red1);
-    Serial.print("Red2avg: ");
-    Serial.println(redAverage2);
-    Serial.print("Red2: ");
-    Serial.println(red2);
-    delay(100);
+    intensity = colSen.readBlue();
+    if (isLow) {current_calibration_val = current_calibration_val < intensity ? current_calibration_val : intensity;}
+    else {current_calibration_val = current_calibration_val > intensity ? current_calibration_val : intensity;}
+    delay(1);
   }
-  digitalWrite(COL_SEN_RED, LOW);
+  Serial.print("Blue: ");
+  Serial.println(current_calibration_val);
 }
 
-void demoSequence()
+void colourCalibrationSequence()
 {
-  // 1 - 78, 2- 80
-  rampDrive(motor1, DRV8833_REVERSE, 0.0f, 68.0f, motor2, DRV8833_REVERSE, 0.0f, 70.5f);
+  bool isSequenceOneComplete = false;
+  bool isSequenceTwoComplete = false;
 
-  // delay(2000);
+  Serial.println("Press button to start WHITE calibration...");
+  while (!isSequenceOneComplete)
+  {
+    if (digitalRead(USER_BTN) == 0)
+    {
+      delay(100);
+      if (digitalRead(USER_BTN) == 0)
+      {
+        Serial.println("Colour Sensor 1:");
+        calibrateColours(colSen1, true);
 
-  // detect red
-  Serial.println("Colour test");
-  check_red();
-  Serial.println("test done");
+        Serial.println();
+        
+        Serial.println("Colour Sensor 2:");
+        calibrateColours(colSen2, true);
 
-  // Do 360 turn
-  turn(360.0f, 68.0f, 70.5f);
-  motor1.stop();
-  motor2.stop();
+        isSequenceOneComplete = true;
+      }
+    }
+  }
 
-  // drive backwards
-  rampDrive(motor1, DRV8833_FORWARD, 0.0f, 68.0f, motor2, DRV8833_FORWARD, 0.0f, 70.5f);
+  Serial.println("Press button to start BLACK calibration...");
+  while (!isSequenceTwoComplete)
+  {
+    if (digitalRead(USER_BTN) == 0)
+    {
+      delay(100);
+      if (digitalRead(USER_BTN) == 0)
+      {
+        Serial.println("Colour Sensor 1:");
+        calibrateColours(colSen1, false);
 
-  delay(2000);
-  motor1.stop();
-  motor2.stop();
+        Serial.println();
+        
+        Serial.println("Colour Sensor 2:");
+        calibrateColours(colSen2, false);
+
+        isSequenceOneComplete = true;
+      }
+    }
+  }
 }
 
 void setup()
@@ -171,45 +151,15 @@ void setup()
   {
     Serial.println("Colour Sensor 2 Initialization: FAILED");
   }
+  Serial.println();
 
-  pinMode(COL_SEN_ADC_1, INPUT);
-  pinMode(COL_SEN_ADC_2, INPUT);
-  pinMode(COL_SEN_RED, OUTPUT);
-  pinMode(COL_SEN_GREEN, OUTPUT);
-  pinMode(COL_SEN_BLUE, OUTPUT);
-  digitalWrite(COL_SEN_RED, LOW);
-  digitalWrite(COL_SEN_GREEN, LOW);
-  digitalWrite(COL_SEN_BLUE, LOW);
-
-  imu.init();
-
-  Serial.println("Motor 1 Initialization: SUCCESSFUL");
-  Serial.println("Motor 2 Initialization: SUCCESSFUL");
+  colourCalibrationSequence();
+  
 }
 
 // Read sensor values for each color and print them to serial monitor
 void loop()
 {
-
-  if (digitalRead(USER_BTN) == 0)
-  {
-    delay(100);
-    if (digitalRead(USER_BTN) == 0)
-    {
-      if (isStop == true)
-      {
-        isStop = false;
-        delay(1000);
-        demoSequence();
-      }
-      else
-      {
-        // isStop = true;
-        // motor1.stop();
-        // motor2.stop();
-      }
-    }
-  }
-
-  // digitalToggle(LED_BUILTIN);
+  digitalToggle(LED_BUILTIN);
+  delay(250);
 }
