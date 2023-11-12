@@ -33,7 +33,7 @@ SFE_ISL29125::~SFE_ISL29125()
 }
 
 // Initialize - returns true if successful
-// Starts Wire/I2C Communication
+// Starts _wire/I2C Communication
 // Verifies sensor is there by checking its device ID
 // Resets all registers/configurations to factory default
 // Sets configuration registers for the common use case
@@ -164,13 +164,13 @@ uint8_t SFE_ISL29125::readStatus()
 // Generic I2C read register (single byte)
 uint8_t SFE_ISL29125::read8(uint8_t reg)
 {
-  Wire.beginTransmission(_addr);
-  Wire.write(reg);
-  Wire.endTransmission();
-//  Wire.beginTransmission(_addr);
-  Wire.requestFrom(_addr,(uint8_t)1);
-  uint8_t data = Wire.read();
-//  Wire.endTransmission();
+  _wire.beginTransmission(_addr);
+  _wire.write(reg);
+  _wire.endTransmission();
+//  _wire.beginTransmission(_addr);
+  _wire.requestFrom(_addr,(uint8_t)1);
+  uint8_t data = _wire.read();
+//  _wire.endTransmission();
 
   return data;
 }
@@ -178,10 +178,10 @@ uint8_t SFE_ISL29125::read8(uint8_t reg)
 // Generic I2C write data to register (single byte)
 void SFE_ISL29125::write8(uint8_t reg, uint8_t data)
 {
-  Wire.beginTransmission(_addr);
-  Wire.write(reg);
-  Wire.write(data);
-  Wire.endTransmission();
+  _wire.beginTransmission(_addr);
+  _wire.write(reg);
+  _wire.write(data);
+  _wire.endTransmission();
 
   return;
 }
@@ -191,15 +191,15 @@ uint16_t SFE_ISL29125::read16(uint8_t reg)
 {
   uint16_t data = 0x0000;
 
-  Wire.beginTransmission(_addr);
-  Wire.write(reg);
-  Wire.endTransmission();
+  _wire.beginTransmission(_addr);
+  _wire.write(reg);
+  _wire.endTransmission();
 
-//  Wire.beginTransmission(_addr);
-  Wire.requestFrom(_addr, (uint8_t)2); // request 2 bytes of data
-  data = Wire.read();
-  data |= (Wire.read() << 8);
-//  Wire.endTransmission();
+//  _wire.beginTransmission(_addr);
+  _wire.requestFrom(_addr, (uint8_t)2); // request 2 bytes of data
+  data = _wire.read();
+  data |= (_wire.read() << 8);
+//  _wire.endTransmission();
 
   return data;
 }
@@ -207,9 +207,9 @@ uint16_t SFE_ISL29125::read16(uint8_t reg)
 // Generic I2C write data to registers (two bytes, LSB first)
 void SFE_ISL29125::write16(uint8_t reg, uint16_t data)
 {
-  Wire.beginTransmission(_addr);
-  Wire.write(reg);
-  Wire.write(data);
-  Wire.write(data>>8);
-  Wire.endTransmission();
+  _wire.beginTransmission(_addr);
+  _wire.write(reg);
+  _wire.write(data);
+  _wire.write(data>>8);
+  _wire.endTransmission();
 }
