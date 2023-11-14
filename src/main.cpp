@@ -70,8 +70,6 @@ void calibrateColours(SFE_ISL29125* colSen, bool isLow, uint16_t* redCalibration
     else {current_calibration_val = current_calibration_val > intensity ? current_calibration_val : intensity;}
     delay(1);
   }
-  Serial.print("Red: ");
-  Serial.println(current_calibration_val);
   *redCalibration = current_calibration_val;
 
   //green
@@ -83,8 +81,6 @@ void calibrateColours(SFE_ISL29125* colSen, bool isLow, uint16_t* redCalibration
     else {current_calibration_val = current_calibration_val > intensity ? current_calibration_val : intensity;}
     delay(1);
   }
-  Serial.print("Green: ");
-  Serial.println(current_calibration_val);
   *blueCalibration = current_calibration_val;
 
   //blue
@@ -96,8 +92,6 @@ void calibrateColours(SFE_ISL29125* colSen, bool isLow, uint16_t* redCalibration
     else {current_calibration_val = current_calibration_val > intensity ? current_calibration_val : intensity;}
     delay(1);
   }
-  Serial.print("Blue: ");
-  Serial.println(current_calibration_val);
   *greenCalibration = current_calibration_val;
 }
 
@@ -114,12 +108,7 @@ void colourCalibrationSequence()
       delay(100);
       if (digitalRead(USER_BTN) == 0)
       {
-        Serial.println("Colour Sensor 1:");
-        calibrateColours(&colSen1, true, &whiteRedCalibration1, &whiteGreenCalibration1, &whiteBlueCalibration1);
-
-        Serial.println();
-        
-        Serial.println("Colour Sensor 2:");
+        calibrateColours(&colSen1, true, &whiteRedCalibration1, &whiteGreenCalibration1, &whiteBlueCalibration1);        
         calibrateColours(&colSen2, true, &whiteRedCalibration2, &whiteGreenCalibration2, &whiteBlueCalibration2);
 
         isSequenceOneComplete = true;
@@ -135,18 +124,47 @@ void colourCalibrationSequence()
       delay(100);
       if (digitalRead(USER_BTN) == 0)
       {
-        Serial.println("Colour Sensor 1:");
         calibrateColours(&colSen1, false, &blackRedCalibration1, &blackGreenCalibration1, &blackBlueCalibration1);
-
-        Serial.println();
-        
-        Serial.println("Colour Sensor 2:");
         calibrateColours(&colSen2, false, &blackRedCalibration2, &blackGreenCalibration2, &blackBlueCalibration2);
 
         isSequenceTwoComplete = true;
       }
     }
   }
+
+  Serial.println("Colour Sensor 1:");
+  Serial.print("R min: ");
+  Serial.println(blackRedCalibration1);
+  Serial.print("R max: ");
+  Serial.println(whiteRedCalibration1);
+
+  Serial.print("G min: ");
+  Serial.println(blackGreenCalibration1);
+  Serial.print("G max: ");
+  Serial.println(whiteGreenCalibration1);
+
+  Serial.print("B min: ");
+  Serial.println(blackBlueCalibration1);
+  Serial.print("B max: ");
+  Serial.println(whiteBlueCalibration1);
+
+  Serial.println();
+
+  Serial.println("Colour Sensor 2:");
+  Serial.print("R min: ");
+  Serial.println(blackRedCalibration2);
+  Serial.print("R max: ");
+  Serial.println(whiteRedCalibration2);
+
+  Serial.print("G min: ");
+  Serial.println(blackGreenCalibration2);
+  Serial.print("G max: ");
+  Serial.println(whiteGreenCalibration2);
+
+  Serial.print("B min: ");
+  Serial.println(blackBlueCalibration2);
+  Serial.print("B max: ");
+  Serial.println(whiteBlueCalibration2);
 }
 
 void setup()
