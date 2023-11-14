@@ -236,24 +236,24 @@ void SFE_ISL29125::write16(uint8_t reg, uint16_t data)
 
 uint8_t SFE_ISL29125::scaleRGB(uint16_t intensity, uint16_t min, uint16_t max)
 {
-  uint16_t convertVal = map(intensity, min, max, 0, 255);
+  int convertVal = map(intensity, min, max, 0, 255);
   return constrain(convertVal, 0, 255);
 }
 
 uint8_t SFE_ISL29125::readRedRGB()
 {
-  uint16_t redIntensity = readRed();
+  int redIntensity = readRed();
   return scaleRGB(redIntensity, _redMin, _redMax);
 }
 
 uint8_t SFE_ISL29125::readGreenRGB()
 {
-  uint16_t greenIntensity = readGreen();
+  int greenIntensity = readGreen();
   return scaleRGB(greenIntensity, _greenMin, _greenMax);
 }
 
 uint8_t SFE_ISL29125::readBlueRGB()
 {
-  uint16_t blueIntensity = readBlue();
+  int blueIntensity = readBlue();
   return scaleRGB(blueIntensity, _blueMin, _blueMax);
 }

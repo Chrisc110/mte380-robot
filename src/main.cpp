@@ -65,12 +65,18 @@ void loop()
   //   }
   // }
 
-  Serial.print("Red: ");
+  Serial.print("Red1: ");
   Serial.println(colSen1.readRedRGB());
-  Serial.print("Green: ");
+  Serial.print("Green1: ");
   Serial.println(colSen1.readGreenRGB());
-  Serial.print("Blue: ");
+  Serial.print("Blue1: ");
   Serial.println(colSen1.readBlueRGB());
+  Serial.print("Red2: ");
+  Serial.println(colSen2.readRedRGB());
+  Serial.print("Green2: ");
+  Serial.println(colSen2.readGreenRGB());
+  Serial.print("Blue2: ");
+  Serial.println(colSen2.readBlueRGB());
   Serial.println();
   delay(500);
 
