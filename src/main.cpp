@@ -27,7 +27,7 @@ void setup()
   pinMode(USER_BTN, INPUT);
 
   // Initialize the ISL29125 with simple configuration so it starts sampling
-  if (colSen1.init(C1_R_MIN, C1_R_MIN, C1_G_MIN, C1_G_MAX, C1_B_MIN, C1_B_MAX))
+  if (colSen1.init(C1_R_MIN, C1_R_MAX, C1_G_MIN, C1_G_MAX, C1_B_MIN, C1_B_MAX))
   {
     Serial.println("Colour Sensor 1 Initialization: SUCCESSFUL");
   }
@@ -36,7 +36,7 @@ void setup()
     Serial.println("Colour Sensor 1 Initialization: FAILED");
   }
 
-  if (colSen2.init(C2_R_MIN, C2_R_MIN, C2_G_MIN, C2_G_MAX, C2_B_MIN, C2_B_MAX))
+  if (colSen2.init(C2_R_MIN, C2_R_MAX, C2_G_MIN, C2_G_MAX, C2_B_MIN, C2_B_MAX))
   {
     Serial.println("Colour Sensor 2 Initialization: SUCCESSFUL");
   }
@@ -71,5 +71,7 @@ void loop()
   Serial.println(colSen1.readGreenRGB());
   Serial.print("Blue: ");
   Serial.println(colSen1.readBlueRGB());
+  Serial.println();
+  delay(500);
 
 }
