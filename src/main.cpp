@@ -35,46 +35,70 @@ TwoWire colSenWire2(COL_SEN_SDA_2, COL_SEN_SCL_2);
 SFE_ISL29125 colSen1(ISL_I2C_ADDR, colSenWire1);
 SFE_ISL29125 colSen2(ISL_I2C_ADDR, colSenWire2);
 
-void calibrateColours(SFE_ISL29125 colSen, bool isLow)
+uint16_t whiteRedCalibration1 = 0;
+uint16_t whiteGreenCalibration1 = 0;
+uint16_t whiteBlueCalibration1 = 0;
+uint16_t blackRedCalibration1 = 0;
+uint16_t blackGreenCalibration1 = 0;
+uint16_t blackBlueCalibration1 = 0;
+
+uint16_t whiteRedCalibration2 = 0;
+uint16_t whiteGreenCalibration2 = 0;
+uint16_t whiteBlueCalibration2 = 0;
+uint16_t blackRedCalibration2 = 0;
+uint16_t blackGreenCalibration2 = 0;
+uint16_t blackBlueCalibration2 = 0;
+
+void calibrateColours(SFE_ISL29125* colSen, bool isLow, uint16_t* redCalibration, uint16_t* greenCalibration, uint16_t* blueCalibration)
 {
   const uint8_t MAX_ITERATIONS = 200;
   uint16_t current_calibration_val = 0;
+  uint16_t reset_val = 0;
   uint16_t intensity = 0;
 
+  if (isLow)
+  {
+    reset_val = 65535;
+  }
+
   //red
+  current_calibration_val = reset_val;
   for (uint8_t i = 0; i < MAX_ITERATIONS; i++)
   {
-    intensity = colSen.readRed();
+    intensity = colSen->readRed();
     if (isLow) {current_calibration_val = current_calibration_val < intensity ? current_calibration_val : intensity;}
     else {current_calibration_val = current_calibration_val > intensity ? current_calibration_val : intensity;}
     delay(1);
   }
   Serial.print("Red: ");
   Serial.println(current_calibration_val);
+  *redCalibration = current_calibration_val;
 
   //green
-  current_calibration_val = 0;
+  current_calibration_val = reset_val;
   for (uint8_t i = 0; i < MAX_ITERATIONS; i++)
   {
-    intensity = colSen.readGreen();
+    intensity = colSen->readGreen();
     if (isLow) {current_calibration_val = current_calibration_val < intensity ? current_calibration_val : intensity;}
     else {current_calibration_val = current_calibration_val > intensity ? current_calibration_val : intensity;}
     delay(1);
   }
   Serial.print("Green: ");
   Serial.println(current_calibration_val);
+  *blueCalibration = current_calibration_val;
 
   //blue
-  current_calibration_val = 0;
+  current_calibration_val = reset_val;
   for (uint8_t i = 0; i < MAX_ITERATIONS; i++)
   {
-    intensity = colSen.readBlue();
+    intensity = colSen->readBlue();
     if (isLow) {current_calibration_val = current_calibration_val < intensity ? current_calibration_val : intensity;}
     else {current_calibration_val = current_calibration_val > intensity ? current_calibration_val : intensity;}
     delay(1);
   }
   Serial.print("Blue: ");
   Serial.println(current_calibration_val);
+  *greenCalibration = current_calibration_val;
 }
 
 void colourCalibrationSequence()
@@ -91,12 +115,12 @@ void colourCalibrationSequence()
       if (digitalRead(USER_BTN) == 0)
       {
         Serial.println("Colour Sensor 1:");
-        calibrateColours(colSen1, true);
+        calibrateColours(&colSen1, true, &whiteRedCalibration1, &whiteGreenCalibration1, &whiteBlueCalibration1);
 
         Serial.println();
         
         Serial.println("Colour Sensor 2:");
-        calibrateColours(colSen2, true);
+        calibrateColours(&colSen2, true, &whiteRedCalibration2, &whiteGreenCalibration2, &whiteBlueCalibration2);
 
         isSequenceOneComplete = true;
       }
@@ -112,14 +136,14 @@ void colourCalibrationSequence()
       if (digitalRead(USER_BTN) == 0)
       {
         Serial.println("Colour Sensor 1:");
-        calibrateColours(colSen1, false);
+        calibrateColours(&colSen1, false, &blackRedCalibration1, &blackGreenCalibration1, &blackBlueCalibration1);
 
         Serial.println();
         
         Serial.println("Colour Sensor 2:");
-        calibrateColours(colSen2, false);
+        calibrateColours(&colSen2, false, &blackRedCalibration2, &blackGreenCalibration2, &blackBlueCalibration2);
 
-        isSequenceOneComplete = true;
+        isSequenceTwoComplete = true;
       }
     }
   }
@@ -152,14 +176,47 @@ void setup()
     Serial.println("Colour Sensor 2 Initialization: FAILED");
   }
   Serial.println();
-
   colourCalibrationSequence();
-  
+  Serial.println("Calibration Complete!");
 }
 
 // Read sensor values for each color and print them to serial monitor
 void loop()
 {
-  digitalToggle(LED_BUILTIN);
-  delay(250);
+  int redIntensity1 = colSen1.readRed();
+  int greenIntensity1 = colSen1.readGreen();
+  int blueIntensity1 = colSen1.readBlue();
+
+  int redConvert1 = map(redIntensity1, blackRedCalibration1, whiteRedCalibration1, 0, 255);
+  int greenConvert1 = map(greenIntensity1, blackGreenCalibration1, whiteGreenCalibration1, 0, 255);
+  int blueConvert1 = map(blueIntensity1, blackBlueCalibration1, whiteBlueCalibration1, 0, 255);
+
+  Serial.print("Red1: ");
+  Serial.println(constrain(redConvert1, 0, 255));
+  Serial.print("Green1: ");
+  Serial.println(constrain(greenConvert1, 0, 255));
+  Serial.print("Blue1: ");
+  Serial.println(constrain(blueConvert1, 0, 255));
+  Serial.println();
+
+
+  int redIntensity2 = colSen2.readRed();
+  int greenIntensity2 = colSen2.readGreen();
+  int blueIntensity2 = colSen2.readBlue();
+
+  int redConvert2 = map(redIntensity2, blackRedCalibration2, whiteRedCalibration2, 0, 255);
+  int greenConvert2 = map(greenIntensity2, blackGreenCalibration2, whiteGreenCalibration2, 0, 255);
+  int blueConvert2 = map(blueIntensity2, blackBlueCalibration2, whiteBlueCalibration2, 0, 255);
+
+  // Serial.print("Red2: ");
+  // Serial.println(constrain(redConvert2, 0, 255));
+  // Serial.print("Green2: ");
+  // Serial.println(constrain(greenConvert2, 0, 255));
+  // Serial.print("Blue2: ");
+  // Serial.println(constrain(blueConvert2, 0, 255));
+  // Serial.println();
+
+  delay(500);
+
+
 }
