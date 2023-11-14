@@ -226,13 +226,13 @@ void loop()
   int greenConvert2 = map(greenIntensity2, blackGreenCalibration2, whiteGreenCalibration2, 0, 255);
   int blueConvert2 = map(blueIntensity2, blackBlueCalibration2, whiteBlueCalibration2, 0, 255);
 
-  // Serial.print("Red2: ");
-  // Serial.println(constrain(redConvert2, 0, 255));
-  // Serial.print("Green2: ");
-  // Serial.println(constrain(greenConvert2, 0, 255));
-  // Serial.print("Blue2: ");
-  // Serial.println(constrain(blueConvert2, 0, 255));
-  // Serial.println();
+  Serial.print("Red2: ");
+  Serial.println(constrain(redConvert2, 0, 255));
+  Serial.print("Green2: ");
+  Serial.println(constrain(greenConvert2, 0, 255));
+  Serial.print("Blue2: ");
+  Serial.println(constrain(blueConvert2, 0, 255));
+  Serial.println();
 
   delay(500);
 
