@@ -4,6 +4,7 @@
 #include <MPU6050.h>
 #include "defines.h"
 #include "math.h"
+#include "lineFollowing.h"
 
 // Instantiate colour sensors: Please match colSen1 and motor1 to the same side!
 TwoWire colSenWire1(COL_SEN_SDA_1, COL_SEN_SCL_1);
@@ -56,28 +57,12 @@ void setup()
 void loop()
 {
   
-  // if (digitalRead(USER_BTN) == 0)
-  // {
-  //   delay(100);
-  //   if (digitalRead(USER_BTN) == 0)
-  //   {
-  //     lineFollowing(motor1, motor2);
-  //   }
-  // }
-
-  Serial.print("Red1: ");
-  Serial.println(colSen1.readRedRGB());
-  Serial.print("Green1: ");
-  Serial.println(colSen1.readGreenRGB());
-  Serial.print("Blue1: ");
-  Serial.println(colSen1.readBlueRGB());
-  Serial.print("Red2: ");
-  Serial.println(colSen2.readRedRGB());
-  Serial.print("Green2: ");
-  Serial.println(colSen2.readGreenRGB());
-  Serial.print("Blue2: ");
-  Serial.println(colSen2.readBlueRGB());
-  Serial.println();
-  delay(500);
-
+  if (digitalRead(USER_BTN) == 0)
+  {
+    delay(100);
+    if (digitalRead(USER_BTN) == 0)
+    {
+      lineFollowing(motor1, motor2, colSen1, colSen2);
+    }
+  }
 }
