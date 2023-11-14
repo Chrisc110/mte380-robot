@@ -13,19 +13,19 @@
 #define COL_SEN_GREEN 12
 #define COL_SEN_BLUE 13
 
-#define C1_R_MIN 135
-#define C1_R_MAX 1404
-#define C1_G_MIN 302
-#define C1_G_MAX 2336
-#define C1_B_MIN 340
-#define C1_B_MAX 2741
+#define C1_R_MIN 163
+#define C1_R_MAX 1492
+#define C1_G_MIN 332
+#define C1_G_MAX 2416
+#define C1_B_MIN 369
+#define C1_B_MAX 2847
 
-#define C2_R_MIN 106
-#define C2_R_MAX 1158
-#define C2_G_MIN 260
-#define C2_G_MAX 2126
-#define C2_B_MIN 254
-#define C2_B_MAX 2180
+#define C2_R_MIN 129
+#define C2_R_MAX 1246
+#define C2_G_MIN 285
+#define C2_G_MAX 2217
+#define C2_B_MIN 276
+#define C2_B_MAX 2284
 
 
 /******************** Motors ***********************/
