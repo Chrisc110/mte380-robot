@@ -56,7 +56,7 @@ bool SFE_ISL29125::init()
   ret &= reset();
 
   // Set to RGB mode, 10k lux, and high IR compensation
-  ret &= config(CFG1_MODE_RGB | CFG1_375LUX, CFG2_IR_ADJUST_HIGH, CFG_DEFAULT);
+  ret &= config(CFG1_MODE_RGB | CFG1_10KLUX, CFG2_IR_ADJUST_HIGH, CFG_DEFAULT);
 
   return ret;
 }
