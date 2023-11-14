@@ -1,5 +1,5 @@
-#ifndef HELPERS_H
-#define HELPER_H
+#ifndef MOTOR_H
+#define MOTOR_H
 #include <drv8833.h>
 
 void rampDrive(DRV8833 motor1,
@@ -11,4 +11,4 @@ void rampDrive(DRV8833 motor1,
                float startingSpeed2,
                float finalSpeed2);
 
-#endif  
+#endif

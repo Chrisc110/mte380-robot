@@ -115,7 +115,12 @@ class SFE_ISL29125
   SFE_ISL29125(uint8_t addr, TwoWire wire);
   ~SFE_ISL29125();
 
-  bool init();
+  bool init(uint16_t redMin,
+            uint16_t redMax,
+            uint16_t greenMin,
+            uint16_t greenMax,
+            uint16_t blueMin,
+            uint16_t blueMax);
   bool reset();
   bool config(uint8_t config1, uint8_t config2, uint8_t config3);
   
@@ -128,17 +133,31 @@ class SFE_ISL29125
   uint16_t readGreen();
   uint16_t readBlue();
   
+  uint8_t readRedRGB();
+  uint8_t readGreenRGB();
+  uint8_t readBlueRGB();
+
   uint8_t readStatus();
   
  private:
   uint8_t _addr;
   TwoWire _wire;
+
+  //calibration values for RGB
+  uint16_t _redMin;
+  uint16_t _redMax;
+  uint16_t _greenMin;
+  uint16_t _greenMax;
+  uint16_t _blueMin;
+  uint16_t _blueMax;
   
   uint8_t read8(uint8_t reg);
   void write8(uint8_t reg, uint8_t data);
   
   uint16_t read16(uint8_t reg);
   void write16(uint8_t reg, uint16_t data);
+  
+  uint8_t scaleRGB(uint16_t intensity, uint16_t min, uint16_t max);
   
 };
 

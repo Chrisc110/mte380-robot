@@ -21,6 +21,13 @@ Distributed as-is; no warranty is given.
 // Constructor - Creates sensor object and sets I2C address
 SFE_ISL29125::SFE_ISL29125(uint8_t addr, TwoWire wire)
 {
+  _redMin = 0;
+  _redMax = 0;
+  _greenMin = 0;
+  _greenMax = 0;
+  _blueMin = 0;
+  _blueMax = 0;
+
   _addr = addr;
 
   _wire = wire;
@@ -37,8 +44,21 @@ SFE_ISL29125::~SFE_ISL29125()
 // Verifies sensor is there by checking its device ID
 // Resets all registers/configurations to factory default
 // Sets configuration registers for the common use case
-bool SFE_ISL29125::init()
+bool SFE_ISL29125::init(uint16_t redMin,
+                        uint16_t redMax,
+                        uint16_t greenMin,
+                        uint16_t greenMax,
+                        uint16_t blueMin,
+                        uint16_t blueMax)
 {
+  //set rgb calibration values
+  _redMin = redMin;
+  _redMax = redMax;
+  _greenMin = greenMin;
+  _greenMax = greenMax;
+  _blueMin = blueMin;
+  _blueMax = blueMax;
+
   bool ret = true;
   uint8_t data = 0x00;
 
@@ -212,4 +232,28 @@ void SFE_ISL29125::write16(uint8_t reg, uint16_t data)
   _wire.write(data);
   _wire.write(data>>8);
   _wire.endTransmission();
+}
+
+uint8_t SFE_ISL29125::scaleRGB(uint16_t intensity, uint16_t min, uint16_t max)
+{
+  uint16_t convertVal = map(intensity, min, max, 0, 255);
+  return constrain(convertVal, 0, 255);
+}
+
+uint8_t SFE_ISL29125::readRedRGB()
+{
+  uint16_t redIntensity = readRed();
+  return scaleRGB(redIntensity, _redMin, _redMax);
+}
+
+uint8_t SFE_ISL29125::readGreenRGB()
+{
+  uint16_t greenIntensity = readGreen();
+  return scaleRGB(greenIntensity, _greenMin, _greenMax);
+}
+
+uint8_t SFE_ISL29125::readBlueRGB()
+{
+  uint16_t blueIntensity = readBlue();
+  return scaleRGB(blueIntensity, _blueMin, _blueMax);
 }
