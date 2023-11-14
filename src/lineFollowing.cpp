@@ -1,11 +1,11 @@
 #include "lineFollowing.h"
 #include "Arduino.h"
 
-#define M1_BASE_SPEED 50.0f
-#define M2_BASE_SPEED 50.0
-#define P_GAIN 0.5f
-#define M1_MAX_SPEED 60.0f
-#define M2_MAX_SPEED
+#define M1_BASE_SPEED 60.0f
+#define M2_BASE_SPEED 62.0f
+#define P_GAIN 8.0f
+#define M1_MAX_SPEED 70.0f
+#define M2_MAX_SPEED 70.0f
 
 void lineFollowing(DRV8833 motor1,
                    DRV8833 motor2)
@@ -18,7 +18,8 @@ void lineFollowing(DRV8833 motor1,
     while(1)
     {
         //take colour sensor readings
-        
+         
+
 
         //determine error
 
