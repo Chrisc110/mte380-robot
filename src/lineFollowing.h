@@ -5,7 +5,7 @@
 
 void lineFollowing(DRV8833 motor1,
                    DRV8833 motor2,
-                   SFE_ISL29125 colSen1,
-                   SFE_ISL29125 colSen2);
+                   SFE_ISL29125 *colSen1,
+                   SFE_ISL29125 *colSen2);
 
 #endif

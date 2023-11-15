@@ -17,7 +17,7 @@ DRV8833 motor1(MOTOR1_IN1, MOTOR1_IN2);
 DRV8833 motor2(MOTOR2_IN1, MOTOR2_IN2);
 
 // Instantiate IMU
-MPU6050 imu;
+// MPU6050 imu;
 
 void setup()
 {
@@ -46,8 +46,8 @@ void setup()
     Serial.println("Colour Sensor 2 Initialization: FAILED");
   }
 
-  imu.init();
-  Serial.println("IMU Initialization: SUCCESSFUL");
+  // imu.init();
+  //Serial.println("IMU Initialization: SUCCESSFUL");
 
   Serial.println("Motor 1 Initialization: SUCCESSFUL");
   Serial.println("Motor 2 Initialization: SUCCESSFUL");
@@ -56,13 +56,29 @@ void setup()
 // Read sensor values for each color and print them to serial monitor
 void loop()
 {
-  
+
+  Serial.print("Red 1: ");
+  Serial.println(colSen1.readRedRGB());
+  Serial.print("Green 1: ");
+  Serial.println(colSen1.readGreenRGB());
+  Serial.print("Blue 1: ");
+  Serial.println(colSen1.readBlueRGB());
+  Serial.print("Red 2: ");
+  Serial.println(colSen2.readRedRGB());
+  Serial.print("Green 2: ");
+  Serial.println(colSen2.readGreenRGB());
+  Serial.print("Blue 2: ");
+  Serial.println(colSen2.readBlueRGB());
+  Serial.println();
+  delay(500);
+
+
   if (digitalRead(USER_BTN) == 0)
   {
     delay(100);
     if (digitalRead(USER_BTN) == 0)
     {
-      lineFollowing(motor1, motor2, colSen1, colSen2);
+      lineFollowing(motor1, motor2, &colSen1, &colSen2);
     }
   }
 }
