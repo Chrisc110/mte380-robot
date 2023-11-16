@@ -47,7 +47,7 @@ void setup()
   }
 
   // imu.init();
-  //Serial.println("IMU Initialization: SUCCESSFUL");
+  // Serial.println("IMU Initialization: SUCCESSFUL");
 
   Serial.println("Motor 1 Initialization: SUCCESSFUL");
   Serial.println("Motor 2 Initialization: SUCCESSFUL");
@@ -72,13 +72,20 @@ void loop()
   Serial.println();
   delay(500);
 
-
   if (digitalRead(USER_BTN) == 0)
   {
     delay(100);
     if (digitalRead(USER_BTN) == 0)
     {
-      lineFollowing(motor1, motor2, &colSen1, &colSen2);
+      float sensor_value = ReadSensor(&colSen1, &colSen2);
+
+      float control_output = PID_Controller(sensor_value);
+
+      AdjustMotorSpeed(control_output, motor1, motor2);
+
+      // Add a delay for the sample time
+      float dt = 0.01; // needs to be the same as the value in linefollowing.cpp
+      HAL_Delay(dt);
     }
   }
 }
