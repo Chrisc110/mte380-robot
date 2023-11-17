@@ -8,12 +8,12 @@ void lineFollowing(DRV8833 motor1,
                    SFE_ISL29125 *colSen1,
                    SFE_ISL29125 *colSen2);
 
-float ReadSensor(SFE_ISL29125 *colSen1,
+void ReadSensor(SFE_ISL29125 *colSen1,
                  SFE_ISL29125 *colSen2);
 
-void AdjustMotorSpeed(float control_output, DRV8833 leftMotor,
+void AdjustMotorSpeed(DRV8833 leftMotor,
                       DRV8833 rightMotor);
 
-float PID_Controller(float sensor_error);
+void PID_Controller();
 
 #endif
