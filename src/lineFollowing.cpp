@@ -1,10 +1,10 @@
 #include "lineFollowing.h"
 #include "Arduino.h"
 
-#define LEFT_BASE_SPEED 61.0f
-#define RIGHT_BASE_SPEED 61.0f
-#define P_GAIN_RIGHT 0.4f
-#define P_GAIN_LEFT 0.4f
+#define LEFT_BASE_SPEED 63.0f
+#define RIGHT_BASE_SPEED 63.0f
+#define P_GAIN_RIGHT 0.3f
+#define P_GAIN_LEFT 0.3f
 #define M1_MAX_SPEED 70.0f
 #define M2_MAX_SPEED 70.0f
 
@@ -26,27 +26,36 @@ void lineFollowing(DRV8833 leftMotor,
 {
     //start off by going the base speed
     dir_e state = STRAIGHT;
-
+    float redL = 0;
+    float redR = 0;
+    for (int i = 0; i < 10; i++)
+    {
+        redL += 0.1*colSen1->readRedRGB();
+        redR += 0.1*colSen2->readRedRGB();
+    }
+    float redAverageL = redL;
+    float redAverageR = redR;
     //this is our control loop
     while(1)
     {
         //take colour sensor readings
-        uint8_t leftRed = colSen1->readRedRGB();
-        uint8_t leftGreen = colSen1->readGreenRGB();
-        uint8_t rightRed = colSen2->readRedRGB();
-        uint8_t rightGreen = colSen2->readGreenRGB();
+        redL = colSen1->readRedRGB();
+        redR = colSen2->readRedRGB();
 
         //determine error
-        float error = leftRed - rightRed + RED_OFFSET;
+        float redErrorL = redL-redAverageL;
+        float redErrorR = redR - redAverageR;
+        float error = redErrorL - redErrorR;
         Serial.println(error);
+        
 
-        if (leftGreen > LEFT_GREEN_THRESH && rightGreen > RIGHT_GREEN_THRESH)
-        {
-            //do nothing
-            state = state;
-            digitalWrite(LED_BUILTIN, HIGH);
-        }
-        else if (error > 0)
+        // if (redErrorL > LEFT_GREEN_THRESH && redErrorR > RIGHT_GREEN_THRESH)
+        // {
+        //     //do nothing
+        //     state = state;
+        //     digitalWrite(LED_BUILTIN, HIGH);
+        // }
+        if (error > 0)
         {
             state = LEFT;
             digitalWrite(LED_BUILTIN, LOW);
@@ -62,6 +71,8 @@ void lineFollowing(DRV8833 leftMotor,
         {
             state = STRAIGHT;
             digitalWrite(LED_BUILTIN, LOW);
+            redAverageL = redAverageL*0.95+redL*0.05;
+            redAverageR = redAverageR*0.95+redR*0.05;
 
         }
 
