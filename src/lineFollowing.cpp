@@ -8,14 +8,14 @@
 #include "math.h"
 #include "stm32f4xx.h"
 
-#define LEFT_BASE_SPEED 67.0f
-#define RIGHT_BASE_SPEED 66.0f
-#define OFFSET 5
+#define LEFT_BASE_SPEED 65.0f
+#define RIGHT_BASE_SPEED 64.0f
+#define OFFSET 20
 
 // PID Constants
-float Kp = 0.10;  // Proportional gain
-float Ki = 0.15;  // Integral gain
-float Kd = 0.003; // Derivative gain
+float Kp = 0.175;  // Proportional gain
+float Ki = 0;  // Integral gain
+float Kd = 0; // Derivative gain
 
 // Variables
 float error = 0;
