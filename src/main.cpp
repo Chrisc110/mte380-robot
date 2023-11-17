@@ -85,8 +85,8 @@ void loop()
         AdjustMotorSpeed(motor1, motor2);
 
         // Add a delay for the sample time
-        float dt = 10; // needs to be the same as the value in linefollowing.cpp
-        delay(dt);
+       // needs to be the same as the value in linefollowing.cpp
+        delay(1);
       }
 
     }

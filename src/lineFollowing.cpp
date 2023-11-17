@@ -8,14 +8,14 @@
 #include "math.h"
 #include "stm32f4xx.h"
 
-#define LEFT_BASE_SPEED 65.0f
+#define LEFT_BASE_SPEED 63.0f
 #define RIGHT_BASE_SPEED 64.0f
-#define OFFSET 20
+#define OFFSET -5
 
 // PID Constants
-float Kp = 0.175;  // Proportional gain
+float Kp = 0.13;  // Proportional gain
 float Ki = 0;  // Integral gain
-float Kd = 0; // Derivative gain
+float Kd = 0.0005; // Derivative gain
 
 // Variables
 float error = 0;
@@ -27,7 +27,7 @@ float control_output = 0;
 float setpoint = 500; // Adjust this to your desired setpoint
 
 // Sample time (adjust as needed)
-float dt = 0.01; // 10ms sample time
+float dt = 0.001; // 10ms sample time
 
 // Function to compute control output
 void PID_Controller()
@@ -53,7 +53,11 @@ void ReadSensor(SFE_ISL29125 *colSen1,
     // take colour sensor readings
     uint8_t left = colSen1->readRedRGB();
     uint8_t right = colSen2->readRedRGB();
-    error = left - right + OFFSET;
+    // if(right > 100 && left > 100) {
+    //     error = -previous_error;
+    // } else {
+        error = left - right + OFFSET;
+    // }
 }
 
 // Function to adjust the motor speed (replace with your motor control code)
@@ -61,12 +65,12 @@ void AdjustMotorSpeed(DRV8833 leftMotor,
                       DRV8833 rightMotor)
 {
     // adjust motor speed
-    if (error > 1.0f) // left motor off line
+    if (control_output > 0.0f) // left motor off line
     {
-        leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED + 1.2*abs(control_output));
+        leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED + abs(control_output));
         rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED);
     }
-    else if (error < -1.0f)
+    else if (control_output < 0.0f)
     {
         leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED);
         rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED + abs(control_output));
