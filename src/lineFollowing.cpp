@@ -13,9 +13,9 @@
 #define OFFSET 5
 
 // PID Constants
-float Kp = 1.0;  // Proportional gain
-float Ki = 0.1;  // Integral gain
-float Kd = 0.01; // Derivative gain
+float Kp = 0.10;  // Proportional gain
+float Ki = 0.15;  // Integral gain
+float Kd = 0.003; // Derivative gain
 
 // Variables
 float error = 0;
@@ -37,6 +37,10 @@ void PID_Controller()
     float derivative = (error - previous_error) / dt;
 
     control_output = Kp * error + Ki * integral + Kd * derivative;
+    Serial.print("Control Output: ");
+    Serial.print(control_output);
+    Serial.print(" Error: ");
+    Serial.println(error);
 
     // Update previous error for the next iteration
     previous_error = error;
@@ -59,13 +63,13 @@ void AdjustMotorSpeed(DRV8833 leftMotor,
     // adjust motor speed
     if (error > 1.0f) // left motor off line
     {
-        leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED + control_output);
+        leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED + 1.2*abs(control_output));
         rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED);
     }
     else if (error < -1.0f)
     {
         leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED);
-        rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED + control_output);
+        rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED + abs(control_output));
     }
     else
     {

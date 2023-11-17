@@ -77,15 +77,18 @@ void loop()
     delay(100);
     if (digitalRead(USER_BTN) == 0)
     {
-      ReadSensor(&colSen1, &colSen2);
+      while(1) {
+        ReadSensor(&colSen1, &colSen2);
 
-      PID_Controller();
+        PID_Controller();
 
-      AdjustMotorSpeed(motor1, motor2);
+        AdjustMotorSpeed(motor1, motor2);
 
-      // Add a delay for the sample time
-      float dt = 0.01; // needs to be the same as the value in linefollowing.cpp
-      HAL_Delay(dt);
+        // Add a delay for the sample time
+        float dt = 10; // needs to be the same as the value in linefollowing.cpp
+        delay(dt);
+      }
+
     }
   }
 }
