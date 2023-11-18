@@ -47,17 +47,21 @@ void PID_Controller()
 }
 
 // Function to read the sensor value (replace with your sensor reading code)
-void ReadSensor(SFE_ISL29125 *colSen1,
-                 SFE_ISL29125 *colSen2)
+void ReadSensor(Adafruit_TCS34725 *colSen1,
+                Adafruit_TCS34725 *colSen2)
 {
     // take colour sensor readings
-    uint8_t left = colSen1->readRedRGB();
-    uint8_t right = colSen2->readRedRGB();
-    // if(right > 100 && left > 100) {
-    //     error = -previous_error;
-    // } else {
-        error = left - right + OFFSET;
-    // }
+    float r1, g1, b1;
+    float r2, g2, b2;
+
+    colSen1->getRGB(&r1, &g1, &b1);
+    colSen2->getRGB(&r2, &g2, &b2);
+
+    float left = r1;
+    float right = r2;
+
+    error = left - right + OFFSET;
+    
 }
 
 // Function to adjust the motor speed (replace with your motor control code)
