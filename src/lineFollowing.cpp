@@ -10,21 +10,20 @@
 
 #define LEFT_BASE_SPEED 63.0f
 #define RIGHT_BASE_SPEED 64.0f
-#define OFFSET -5
+#define OFFSET 10
 
 // PID Constants
-float Kp = 0.15;  // Proportional gain
-float Ki = 0;  // Integral gain
-float Kd = 0.0003; // Derivative gain
+float Kp = 0.13;   // Proportional gain
+float Ki = 0;      // Integral gain
+float Kd = 0.0005; // Derivative gain
 
 // Variables
 float error = 0;
 float integral = 0;
 float previous_error = 0;
 float control_output = 0;
-
-// Setpoint (target sensor value)
-float setpoint = 500; // Adjust this to your desired setpoint
+bool isBullsEyeDetected = 0;
+bool first = 0;
 
 // Sample time (adjust as needed)
 float dt = 0.001; // 10ms sample time
@@ -47,17 +46,50 @@ void PID_Controller()
 }
 
 // Function to read the sensor value (replace with your sensor reading code)
-void ReadSensor(SFE_ISL29125 *colSen1,
-                 SFE_ISL29125 *colSen2)
+void ReadSensor(Adafruit_TCS34725 *colSen1,
+                Adafruit_TCS34725 *colSen2)
 {
     // take colour sensor readings
-    uint8_t left = colSen1->readRedRGB();
-    uint8_t right = colSen2->readRedRGB();
-    // if(right > 100 && left > 100) {
-    //     error = -previous_error;
-    // } else {
-        error = left - right + OFFSET;
-    // }
+    float r1, g1, b1;
+    float r2, g2, b2;
+
+    colSen1->getRGB(&r1, &g1, &b1);
+    colSen2->getRGB(&r2, &g2, &b2);
+
+    float leftR = r1;
+    float rightR = r2;
+
+    if (110 < r1 && r1 < 130 && 70 < g1 && g1 < 85 && 50 < b1 && b1 < 80)
+    {
+        Serial.print("BULLSEYE DETECTED");
+        Serial.print("      ");
+        Serial.print(r1);
+        isBullsEyeDetected = 1;
+    }
+
+    error = leftR - rightR + OFFSET;
+}
+
+void BackwardMotorAdjustment(DRV8833 leftMotor,
+                             DRV8833 rightMotor)
+{
+
+    // adjust motor speed
+    if (control_output > 0.0f) // left motor off line
+    {
+        leftMotor.drive(DRV8833_REVERSE, LEFT_BASE_SPEED + 1.1 * abs(control_output));
+        rightMotor.drive(DRV8833_REVERSE, RIGHT_BASE_SPEED);
+    }
+    else if (control_output < 0.0f)
+    {
+        leftMotor.drive(DRV8833_REVERSE, LEFT_BASE_SPEED);
+        rightMotor.drive(DRV8833_REVERSE, RIGHT_BASE_SPEED + abs(control_output));
+    }
+    else
+    {
+        leftMotor.drive(DRV8833_REVERSE, LEFT_BASE_SPEED);
+        rightMotor.drive(DRV8833_REVERSE, RIGHT_BASE_SPEED);
+    }
 }
 
 // Function to adjust the motor speed (replace with your motor control code)
@@ -65,12 +97,12 @@ void AdjustMotorSpeed(DRV8833 leftMotor,
                       DRV8833 rightMotor)
 {
     // adjust motor speed
-    if (control_output > 0.0f) // left motor off line
+    if (control_output < 0.0f) // left motor off line
     {
-        leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED + 1.1*abs(control_output));
+        leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED + 1.1 * abs(control_output));
         rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED);
     }
-    else if (control_output < 0.0f)
+    else if (control_output > 0.0f)
     {
         leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED);
         rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED + abs(control_output));

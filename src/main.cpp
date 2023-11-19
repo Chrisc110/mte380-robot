@@ -5,12 +5,13 @@
 #include "defines.h"
 #include "math.h"
 #include "lineFollowing.h"
+#include "Adafruit_TCS34725.h"
 
 // Instantiate colour sensors: Please match colSen1 and motor1 to the same side!
 TwoWire colSenWire1(COL_SEN_SDA_1, COL_SEN_SCL_1);
 TwoWire colSenWire2(COL_SEN_SDA_2, COL_SEN_SCL_2);
-SFE_ISL29125 colSen1(ISL_I2C_ADDR, colSenWire1);
-SFE_ISL29125 colSen2(ISL_I2C_ADDR, colSenWire2);
+Adafruit_TCS34725 colSen1 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_24MS, TCS34725_GAIN_60X);
+Adafruit_TCS34725 colSen2 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_24MS, TCS34725_GAIN_60X);
 
 // Instantiate motors:
 DRV8833 motor1(MOTOR1_IN1, MOTOR1_IN2);
@@ -27,8 +28,8 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(USER_BTN, INPUT);
 
-  // Initialize the ISL29125 with simple configuration so it starts sampling
-  if (colSen1.init(C1_R_MIN, C1_R_MAX, C1_G_MIN, C1_G_MAX, C1_B_MIN, C1_B_MAX))
+  // Initialize the TCS34725 with simple configuration so it starts sampling
+  if (colSen1.begin(TCS34725_ADDRESS, &colSenWire1))
   {
     Serial.println("Colour Sensor 1 Initialization: SUCCESSFUL");
   }
@@ -37,7 +38,7 @@ void setup()
     Serial.println("Colour Sensor 1 Initialization: FAILED");
   }
 
-  if (colSen2.init(C2_R_MIN, C2_R_MAX, C2_G_MIN, C2_G_MAX, C2_B_MIN, C2_B_MAX))
+  if (colSen2.begin(TCS34725_ADDRESS, &colSenWire2))
   {
     Serial.println("Colour Sensor 2 Initialization: SUCCESSFUL");
   }
@@ -57,18 +58,24 @@ void setup()
 void loop()
 {
 
+  float r1, g1, b1;
+  float r2, g2, b2;
+
+  colSen1.getRGB(&r1, &g1, &b1);
+  colSen2.getRGB(&r2, &g2, &b2);
+
   Serial.print("Red 1: ");
-  Serial.println(colSen1.readRedRGB());
+  Serial.println(r1);
   Serial.print("Green 1: ");
-  Serial.println(colSen1.readGreenRGB());
+  Serial.println(g1);
   Serial.print("Blue 1: ");
-  Serial.println(colSen1.readBlueRGB());
+  Serial.println(b1);
   Serial.print("Red 2: ");
-  Serial.println(colSen2.readRedRGB());
+  Serial.println(r2);
   Serial.print("Green 2: ");
-  Serial.println(colSen2.readGreenRGB());
+  Serial.println(g2);
   Serial.print("Blue 2: ");
-  Serial.println(colSen2.readBlueRGB());
+  Serial.println(b2);
   Serial.println();
   delay(500);
 
@@ -77,7 +84,8 @@ void loop()
     delay(100);
     if (digitalRead(USER_BTN) == 0)
     {
-      while(1) {
+      while (1)
+      {
         ReadSensor(&colSen1, &colSen2);
 
         PID_Controller();
@@ -85,10 +93,9 @@ void loop()
         AdjustMotorSpeed(motor1, motor2);
 
         // Add a delay for the sample time
-       // needs to be the same as the value in linefollowing.cpp
+        // needs to be the same as the value in linefollowing.cpp
         delay(1);
       }
-
     }
   }
 }
