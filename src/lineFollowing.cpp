@@ -8,14 +8,20 @@
 #include "math.h"
 #include "stm32f4xx.h"
 
-#define LEFT_BASE_SPEED 63.0f
-#define RIGHT_BASE_SPEED 64.0f
+#define LEFT_START_SPEED 76.0f
+#define RIGHT_START_SPEED 75.0f
+float LEFT_BASE_SPEED = 63.0;
+float RIGHT_BASE_SPEED = 64.0;
 #define OFFSET 10
+#define OFFSETG -5
 
 // PID Constants
-float Kp = 0.13;   // Proportional gain
+float Kp = 0.22;   // Proportional gain
 float Ki = 0;      // Integral gain
-float Kd = 0.0006; // Derivative gain
+float Kd = 0.0015; // Derivative gain
+
+float KpGreen = 0.0007;
+float errorGreen = 0;
 
 // Variables
 float error = 0;
@@ -36,10 +42,10 @@ void PID_Controller()
     float derivative = (error - previous_error) / dt;
 
     control_output = Kp * error + Ki * integral + Kd * derivative;
-    Serial.print("Control Output: ");
-    Serial.print(control_output);
-    Serial.print(" Error: ");
-    Serial.println(error);
+    // Serial.print("Control Output: ");
+    // Serial.print(control_output);
+    // Serial.print(" Error: ");
+    // Serial.println(error);
 
     // Update previous error for the next iteration
     previous_error = error;
@@ -59,6 +65,8 @@ void ReadSensor(Adafruit_TCS34725 *colSen1,
     float leftR = r1;
     float rightR = r2;
 
+    Serial.println(g1-g2);
+
     if (110 < r1 && r1 < 130 && 70 < g1 && g1 < 85 && 50 < b1 && b1 < 80)
     {
         Serial.print("BULLSEYE DETECTED");
@@ -68,13 +76,14 @@ void ReadSensor(Adafruit_TCS34725 *colSen1,
     }
 
     error = leftR - rightR + OFFSET;
+    errorGreen = g1 - g2 + OFFSETG;
 }
 
 void BackwardMotorAdjustment(DRV8833 leftMotor,
                              DRV8833 rightMotor)
 {
 
-    // adjust motor speed
+    //Adjust motor speed
     if (control_output > 0.0f) // left motor off line
     {
         leftMotor.drive(DRV8833_REVERSE, LEFT_BASE_SPEED + 1.1 * abs(control_output));
@@ -96,6 +105,16 @@ void BackwardMotorAdjustment(DRV8833 leftMotor,
 void AdjustMotorSpeed(DRV8833 leftMotor,
                       DRV8833 rightMotor)
 {
+    // ramp up motor speed
+    if (LEFT_BASE_SPEED < LEFT_START_SPEED)
+    {
+        LEFT_BASE_SPEED += 0.1f;
+    }
+    if (RIGHT_BASE_SPEED < RIGHT_START_SPEED)
+    {
+        RIGHT_BASE_SPEED += 0.1f;
+    }
+
     // adjust motor speed
     if (control_output < 0.0f) // left motor off line
     {
