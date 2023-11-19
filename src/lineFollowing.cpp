@@ -12,6 +12,8 @@
 #define RIGHT_START_SPEED 75.0f
 float LEFT_BASE_SPEED = 63.0;
 float RIGHT_BASE_SPEED = 64.0;
+#define LEFT_END_SPEED 63.0
+#define RIGHT_END_SPEED 64.0
 #define OFFSET 10
 #define OFFSETG -5
 
@@ -31,12 +33,26 @@ float control_output = 0;
 bool isBullsEyeDetected = 0;
 bool first = 0;
 
+bool timingFirst = true;
+float startingTime = 0;
+bool isSlowingDown = false;
+
 // Sample time (adjust as needed)
 float dt = 0.001; // 10ms sample time
 
 // Function to compute control output
 void PID_Controller()
 {
+    if (timingFirst == true)
+    {
+        startingTime = millis();
+        timingFirst = false;
+    }
+    if (millis() - startingTime > 3000)
+    {
+        isSlowingDown = true;
+    }
+
     integral += error * dt;
 
     float derivative = (error - previous_error) / dt;
@@ -64,8 +80,6 @@ void ReadSensor(Adafruit_TCS34725 *colSen1,
 
     float leftR = r1;
     float rightR = r2;
-
-    Serial.println(g1-g2);
 
     if (110 < r1 && r1 < 130 && 70 < g1 && g1 < 85 && 50 < b1 && b1 < 80)
     {
@@ -106,17 +120,29 @@ void AdjustMotorSpeed(DRV8833 leftMotor,
                       DRV8833 rightMotor)
 {
     // ramp up motor speed
-    if (LEFT_BASE_SPEED < LEFT_START_SPEED)
+    if (LEFT_BASE_SPEED < LEFT_START_SPEED && isSlowingDown == false)
     {
         LEFT_BASE_SPEED += 0.1f;
     }
-    if (RIGHT_BASE_SPEED < RIGHT_START_SPEED)
+    if (RIGHT_BASE_SPEED < RIGHT_START_SPEED && isSlowingDown == false)
     {
         RIGHT_BASE_SPEED += 0.1f;
     }
-
+    if(RIGHT_BASE_SPEED > RIGHT_END_SPEED && isSlowingDown == true)
+    {
+        RIGHT_BASE_SPEED -= 0.3f;
+    }
+    if(LEFT_BASE_SPEED > LEFT_END_SPEED && isSlowingDown == true)
+    {
+        LEFT_BASE_SPEED -= 0.3f;
+    }
     // adjust motor speed
-    if (control_output < 0.0f) // left motor off line
+    if (isBullsEyeDetected)
+    {
+        leftMotor.stop();
+        rightMotor.stop();
+    }
+    else if (control_output < 0.0f) // left motor off line
     {
         leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED + 1.1 * abs(control_output));
         rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED);
