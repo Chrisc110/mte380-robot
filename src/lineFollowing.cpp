@@ -96,40 +96,20 @@ void BackwardMotorAdjustment(DRV8833 leftMotor,
 void AdjustMotorSpeed(DRV8833 leftMotor,
                       DRV8833 rightMotor)
 {
-    if (isBullsEyeDetected)
+    // adjust motor speed
+    if (control_output < 0.0f) // left motor off line
     {
-        if (!first)
-        {
-            leftMotor.stop();
-            rightMotor.stop();
-            delay(1000);
-            leftMotor.drive(DRV8833_REVERSE, LEFT_BASE_SPEED);
-            rightMotor.drive(DRV8833_REVERSE, RIGHT_BASE_SPEED);
-            delay(500);
-            first = 1;
-        }
-        else
-        {
-            BackwardMotorAdjustment(leftMotor, rightMotor);
-        }
+        leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED + 1.1 * abs(control_output));
+        rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED);
+    }
+    else if (control_output > 0.0f)
+    {
+        leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED);
+        rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED + abs(control_output));
     }
     else
     {
-        // adjust motor speed
-        if (control_output < 0.0f) // left motor off line
-        {
-            leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED + 1.1 * abs(control_output));
-            rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED);
-        }
-        else if (control_output > 0.0f)
-        {
-            leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED);
-            rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED + abs(control_output));
-        }
-        else
-        {
-            leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED);
-            rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED);
-        }
+        leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED);
+        rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED);
     }
 }
