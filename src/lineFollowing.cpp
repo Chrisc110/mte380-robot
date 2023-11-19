@@ -10,12 +10,12 @@
 
 #define LEFT_BASE_SPEED 63.0f
 #define RIGHT_BASE_SPEED 64.0f
-#define OFFSET -5
+#define OFFSET 10
 
 // PID Constants
-float Kp = 0.15;  // Proportional gain
-float Ki = 0;  // Integral gain
-float Kd = 0.0003; // Derivative gain
+float Kp = 0.2;    // Proportional gain
+float Ki = 0;      // Integral gain
+float Kd = 0.0005; // Derivative gain
 
 // Variables
 float error = 0;
@@ -57,11 +57,10 @@ void ReadSensor(Adafruit_TCS34725 *colSen1,
     colSen1->getRGB(&r1, &g1, &b1);
     colSen2->getRGB(&r2, &g2, &b2);
 
-    float left = r1;
-    float right = r2;
+    float leftR = r1;
+    float rightR = r2;
 
-    error = left - right + OFFSET;
-    
+    error = leftR - rightR + OFFSET;
 }
 
 // Function to adjust the motor speed (replace with your motor control code)
@@ -69,12 +68,12 @@ void AdjustMotorSpeed(DRV8833 leftMotor,
                       DRV8833 rightMotor)
 {
     // adjust motor speed
-    if (control_output > 0.0f) // left motor off line
+    if (control_output < 0.0f) // left motor off line
     {
-        leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED + 1.1*abs(control_output));
+        leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED + 1.1 * abs(control_output));
         rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED);
     }
-    else if (control_output < 0.0f)
+    else if (control_output > 0.0f)
     {
         leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED);
         rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED + abs(control_output));

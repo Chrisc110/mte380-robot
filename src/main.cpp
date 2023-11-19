@@ -13,7 +13,6 @@ TwoWire colSenWire2(COL_SEN_SDA_2, COL_SEN_SCL_2);
 Adafruit_TCS34725 colSen1 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_24MS, TCS34725_GAIN_60X);
 Adafruit_TCS34725 colSen2 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_24MS, TCS34725_GAIN_60X);
 
-
 // Instantiate motors:
 DRV8833 motor1(MOTOR1_IN1, MOTOR1_IN2);
 DRV8833 motor2(MOTOR2_IN1, MOTOR2_IN2);
@@ -61,21 +60,9 @@ void loop()
 
   float r1, g1, b1;
   float r2, g2, b2;
-  
-  Serial.println("Test1");
-  // colSen1.getRGB(&r1, &g1, &b1);
+
+  colSen1.getRGB(&r1, &g1, &b1);
   colSen2.getRGB(&r2, &g2, &b2);
-  if(r2 == 255 && g2 == 255 && b2 == 255)
-  {
-    digitalWrite(LED_BUILTIN, HIGH);
-  }
-  else{
-        digitalWrite(LED_BUILTIN, LOW);
-
-  }
-
-  Serial.println("Test2");
-
 
   Serial.print("Red 1: ");
   Serial.println(r1);
@@ -90,14 +77,15 @@ void loop()
   Serial.print("Blue 2: ");
   Serial.println(b2);
   Serial.println();
-  // delay(500);
+  delay(500);
 
   if (digitalRead(USER_BTN) == 0)
   {
     delay(100);
     if (digitalRead(USER_BTN) == 0)
     {
-      while(1) {
+      while (1)
+      {
         ReadSensor(&colSen1, &colSen2);
 
         PID_Controller();
@@ -105,10 +93,9 @@ void loop()
         AdjustMotorSpeed(motor1, motor2);
 
         // Add a delay for the sample time
-       // needs to be the same as the value in linefollowing.cpp
+        // needs to be the same as the value in linefollowing.cpp
         delay(1);
       }
-
     }
   }
 }

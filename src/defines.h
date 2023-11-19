@@ -13,19 +13,6 @@
 #define COL_SEN_GREEN 12
 #define COL_SEN_BLUE 13
 
-#define C1_R_MIN 172
-#define C1_R_MAX 1466
-#define C1_G_MIN 300
-#define C1_G_MAX 2381
-#define C1_B_MIN 382
-#define C1_B_MAX 2806
-
-#define C2_R_MIN 157
-#define C2_R_MAX 1348
-#define C2_G_MIN 332
-#define C2_G_MAX 2706
-#define C2_B_MIN 359
-#define C2_B_MAX 2755
 
 
 /******************** Motors ***********************/
