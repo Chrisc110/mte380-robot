@@ -12,10 +12,12 @@ void lineFollowing(DRV8833 motor1,
 void ReadSensor(Adafruit_TCS34725 *colSen1,
                 Adafruit_TCS34725 *colSen2);
 
+void BackwardMotorAdjustment(DRV8833 leftMotor,
+                             DRV8833 rightMotor);
+
 void AdjustMotorSpeed(DRV8833 leftMotor,
                       DRV8833 rightMotor);
 
 void PID_Controller();
-
 
 #endif

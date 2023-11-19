@@ -13,7 +13,7 @@
 #define OFFSET 10
 
 // PID Constants
-float Kp = 0.2;    // Proportional gain
+float Kp = 0.13;   // Proportional gain
 float Ki = 0;      // Integral gain
 float Kd = 0.0005; // Derivative gain
 
@@ -22,9 +22,8 @@ float error = 0;
 float integral = 0;
 float previous_error = 0;
 float control_output = 0;
-
-// Setpoint (target sensor value)
-float setpoint = 500; // Adjust this to your desired setpoint
+bool isBullsEyeDetected = 0;
+bool first = 0;
 
 // Sample time (adjust as needed)
 float dt = 0.001; // 10ms sample time
@@ -60,27 +59,77 @@ void ReadSensor(Adafruit_TCS34725 *colSen1,
     float leftR = r1;
     float rightR = r2;
 
+    if (110 < r1 && r1 < 130 && 70 < g1 && g1 < 85 && 50 < b1 && b1 < 80)
+    {
+        Serial.print("BULLSEYE DETECTED");
+        Serial.print("      ");
+        Serial.print(r1);
+        isBullsEyeDetected = 1;
+    }
+
     error = leftR - rightR + OFFSET;
+}
+
+void BackwardMotorAdjustment(DRV8833 leftMotor,
+                             DRV8833 rightMotor)
+{
+
+    // adjust motor speed
+    if (control_output > 0.0f) // left motor off line
+    {
+        leftMotor.drive(DRV8833_REVERSE, LEFT_BASE_SPEED + 1.1 * abs(control_output));
+        rightMotor.drive(DRV8833_REVERSE, RIGHT_BASE_SPEED);
+    }
+    else if (control_output < 0.0f)
+    {
+        leftMotor.drive(DRV8833_REVERSE, LEFT_BASE_SPEED);
+        rightMotor.drive(DRV8833_REVERSE, RIGHT_BASE_SPEED + abs(control_output));
+    }
+    else
+    {
+        leftMotor.drive(DRV8833_REVERSE, LEFT_BASE_SPEED);
+        rightMotor.drive(DRV8833_REVERSE, RIGHT_BASE_SPEED);
+    }
 }
 
 // Function to adjust the motor speed (replace with your motor control code)
 void AdjustMotorSpeed(DRV8833 leftMotor,
                       DRV8833 rightMotor)
 {
-    // adjust motor speed
-    if (control_output < 0.0f) // left motor off line
+    if (isBullsEyeDetected)
     {
-        leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED + 1.1 * abs(control_output));
-        rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED);
-    }
-    else if (control_output > 0.0f)
-    {
-        leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED);
-        rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED + abs(control_output));
+        if (!first)
+        {
+            leftMotor.stop();
+            rightMotor.stop();
+            delay(1000);
+            leftMotor.drive(DRV8833_REVERSE, LEFT_BASE_SPEED);
+            rightMotor.drive(DRV8833_REVERSE, RIGHT_BASE_SPEED);
+            delay(500);
+            first = 1;
+        }
+        else
+        {
+            BackwardMotorAdjustment(leftMotor, rightMotor);
+        }
     }
     else
     {
-        leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED);
-        rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED);
+        // adjust motor speed
+        if (control_output < 0.0f) // left motor off line
+        {
+            leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED + 1.1 * abs(control_output));
+            rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED);
+        }
+        else if (control_output > 0.0f)
+        {
+            leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED);
+            rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED + abs(control_output));
+        }
+        else
+        {
+            leftMotor.drive(DRV8833_FORWARD, LEFT_BASE_SPEED);
+            rightMotor.drive(DRV8833_FORWARD, RIGHT_BASE_SPEED);
+        }
     }
 }
