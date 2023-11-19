@@ -10,8 +10,8 @@
 // Instantiate colour sensors: Please match colSen1 and motor1 to the same side!
 TwoWire colSenWire1(COL_SEN_SDA_1, COL_SEN_SCL_1);
 TwoWire colSenWire2(COL_SEN_SDA_2, COL_SEN_SCL_2);
-Adafruit_TCS34725 colSen1 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_24MS, TCS34725_GAIN_60X);
-Adafruit_TCS34725 colSen2 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_24MS, TCS34725_GAIN_60X);
+Adafruit_TCS34725 colSen1 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_2_4MS, TCS34725_GAIN_60X);
+Adafruit_TCS34725 colSen2 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_2_4MS, TCS34725_GAIN_60X);
 
 // Instantiate motors:
 DRV8833 motor1(MOTOR1_IN1, MOTOR1_IN2);
@@ -81,9 +81,11 @@ void loop()
 
   if (digitalRead(USER_BTN) == 0)
   {
-    delay(100);
+    delay(75);
     if (digitalRead(USER_BTN) == 0)
     {
+      delay(500);
+
       while (1)
       {
         ReadSensor(&colSen1, &colSen2);

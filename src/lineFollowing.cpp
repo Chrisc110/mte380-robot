@@ -15,7 +15,7 @@
 // PID Constants
 float Kp = 0.13;   // Proportional gain
 float Ki = 0;      // Integral gain
-float Kd = 0.0005; // Derivative gain
+float Kd = 0.0006; // Derivative gain
 
 // Variables
 float error = 0;
