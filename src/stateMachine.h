@@ -6,7 +6,7 @@
 #include <MPU6050.h>
 
 typedef enum{
-    INIT = 0,
+    IDLE = 0,
     INITIAL_APPROACH,
     FINAL_APPROACH,
     PICKUP,
@@ -14,11 +14,13 @@ typedef enum{
     RETURN_TO_HOME,
 }state_e;
 
-void runStateMachine(DRV8833* leftMotor,
-                     DRV8833* rightMotor,
-                     Adafruit_TCS34725* leftColour,
-                     Adafruit_TCS34725* rightColour,
-                     MPU6050* imu);
+void runStateMachine();
+void idleState();
+void initialApproachState();
+void finalApproachState();
+void pickupState();
+void dropoffState();
+void returnToHomeState();
 
 
 #endif
