@@ -7,8 +7,8 @@ MPU6050::~MPU6050() {}
 
 void MPU6050::init()
 {
-    Wire.setClock(400000);
-    Wire.begin();
+    //Wire.setClock(400000);
+    //Wire.begin();
     delay(250);
     Wire.beginTransmission(0x68);
     Wire.write(0x6B);
