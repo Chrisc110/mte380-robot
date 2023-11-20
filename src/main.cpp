@@ -9,7 +9,7 @@
 
 // Instantiate colour sensors: Please match colSen1 and motor1 to the same side!
 TwoWire colSenWire1(COL_SEN_SDA_1, COL_SEN_SCL_1);
-TwoWire colSenWire2(COL_SEN_SDA_2, COL_SEN_SCL_2);
+// TwoWire colSenWire2(COL_SEN_SDA_2, COL_SEN_SCL_2); keep this uncommented bec the colour sensor and IMU will use "Wire"
 Adafruit_TCS34725 colSen1 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_2_4MS, TCS34725_GAIN_60X);
 Adafruit_TCS34725 colSen2 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_2_4MS, TCS34725_GAIN_60X);
 
@@ -18,10 +18,11 @@ DRV8833 motor1(MOTOR1_IN1, MOTOR1_IN2);
 DRV8833 motor2(MOTOR2_IN1, MOTOR2_IN2);
 
 // Instantiate IMU
-// MPU6050 imu;
+MPU6050 imu;
 
 void setup()
 {
+  delay(500);
   // Initialize serial communication
   Serial.begin(9600);
 
@@ -38,7 +39,7 @@ void setup()
     Serial.println("Colour Sensor 1 Initialization: FAILED");
   }
 
-  if (colSen2.begin(TCS34725_ADDRESS, &colSenWire2))
+  if (colSen2.begin(TCS34725_ADDRESS, &Wire))
   {
     Serial.println("Colour Sensor 2 Initialization: SUCCESSFUL");
   }
@@ -47,8 +48,17 @@ void setup()
     Serial.println("Colour Sensor 2 Initialization: FAILED");
   }
 
-  // imu.init();
-  // Serial.println("IMU Initialization: SUCCESSFUL");
+  //NOTE: IMU must be initialized AFTER colour sensor
+  if (imu.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G))
+  { 
+    imu.calibrateGyro();
+    Serial.println("IMU Initialization: SUCCESSFUL");
+    
+  }
+  else
+  {
+    Serial.println("IMU Initialization: FAILED");
+  }
 
   Serial.println("Motor 1 Initialization: SUCCESSFUL");
   Serial.println("Motor 2 Initialization: SUCCESSFUL");
