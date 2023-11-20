@@ -13,8 +13,6 @@
 #define COL_SEN_GREEN 12
 #define COL_SEN_BLUE 13
 
-
-
 /******************** Motors ***********************/
 #define MOTOR1_IN1 3
 #define MOTOR1_IN2 6
