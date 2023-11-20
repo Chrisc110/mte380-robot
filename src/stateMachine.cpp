@@ -1,6 +1,7 @@
 #include "stateMachine.h"
 #include "helpers.h"
 #include "PID.h"
+#include "defines.h"
 
 /***************Externed Variables****************/
 // These variables are externed from main so we can use them here
@@ -16,7 +17,6 @@ extern MPU6050 imu;
 /*************************************************/
 
 
-#define PID_DELAY_MS 1
 #define LEFT_MIN_SPEED 63.0f
 #define RIGHT_MIN_SPEED 64.0f
 #define LEFT_MAX_SPEED 75.0f
@@ -71,7 +71,7 @@ void idleState()
 
 void initialApproachState()
 {
-    const uint32_t END_INITIAL_APPROACH_TIME = 3000;
+    const uint32_t END_INITIAL_APPROACH_TIME_MS = 3000;
     const float KP = 0.22;
     const float KD = 0;
     const float KI = 0.0015;
@@ -86,11 +86,10 @@ void initialApproachState()
     updateMotorSpeed(&leftMotor, &rightMotor, leftBaseSpeed, rightBaseSpeed, controlSignal);
 
     //ramping of motor speed
-    if (leftBaseSpeed < LEFT_MAX_SPEED) {leftBaseSpeed += 0.01;}
-    if (rightBaseSpeed < RIGHT_MAX_SPEED) {rightBaseSpeed += 0.01;}
+    if (leftBaseSpeed < LEFT_MAX_SPEED) {leftBaseSpeed += 0.1;}
+    if (rightBaseSpeed < RIGHT_MAX_SPEED) {rightBaseSpeed += 0.1;}
 
-    //delay 1ms
-    if (millis() - startTimeMs > END_INITIAL_APPROACH_TIME)
+    if (millis() - startTimeMs > END_INITIAL_APPROACH_TIME_MS)
     {   
         state = FINAL_APPROACH;
     }
@@ -112,8 +111,8 @@ void finalApproachState()
     //adjust motor speed
     updateMotorSpeed(&leftMotor, &rightMotor, leftBaseSpeed, rightBaseSpeed, controlSignal);
     
-    if (leftBaseSpeed > LEFT_MIN_SPEED) {leftBaseSpeed -= 0.03;}
-    if (rightBaseSpeed > RIGHT_MIN_SPEED) {rightBaseSpeed -= 0.03;}
+    if (leftBaseSpeed > LEFT_MIN_SPEED) {leftBaseSpeed -= 0.3;}
+    if (rightBaseSpeed > RIGHT_MIN_SPEED) {rightBaseSpeed -= 0.3;}
 
     if (isOverBullsEye(&leftColour, &rightColour))
     {

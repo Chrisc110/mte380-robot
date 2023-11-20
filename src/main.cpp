@@ -6,10 +6,12 @@
 #include "math.h"
 #include "lineFollowing.h"
 #include "Adafruit_TCS34725.h"
+#include "stateMachine.h"
 
 // Instantiate colour sensors: Please match colSen1 and motor1 to the same side!
 TwoWire leftWire(COL_SEN_SDA_1, COL_SEN_SCL_1);
 // TwoWire colSenWire2(COL_SEN_SDA_2, COL_SEN_SCL_2); keep this uncommented bec the colour sensor and IMU will use "Wire"
+
 Adafruit_TCS34725 leftColour = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_2_4MS, TCS34725_GAIN_60X);
 Adafruit_TCS34725 rightColour = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_2_4MS, TCS34725_GAIN_60X);
 
@@ -86,47 +88,5 @@ void setup()
 // Read sensor values for each color and print them to serial monitor
 void loop()
 {
-
-  float r1, g1, b1;
-  float r2, g2, b2;
-
-  colSen1.getRGB(&r1, &g1, &b1);
-  colSen2.getRGB(&r2, &g2, &b2);
-
-  Serial.print("Red 1: ");
-  Serial.println(r1);
-  Serial.print("Green 1: ");
-  Serial.println(g1);
-  Serial.print("Blue 1: ");
-  Serial.println(b1);
-  Serial.print("Red 2: ");
-  Serial.println(r2);
-  Serial.print("Green 2: ");
-  Serial.println(g2);
-  Serial.print("Blue 2: ");
-  Serial.println(b2);
-  Serial.println();
-  delay(500);
-
-  if (digitalRead(USER_BTN) == 0)
-  {
-    delay(75);
-    if (digitalRead(USER_BTN) == 0)
-    {
-      delay(500);
-
-      while (1)
-      {
-        ReadSensor(&colSen1, &colSen2);
-
-        PID_Controller();
-
-        AdjustMotorSpeed(motor1, motor2);
-
-        // Add a delay for the sample time
-        // needs to be the same as the value in linefollowing.cpp
-        delay(1);
-      }
-    }
-  }
+  runStateMachine();
 }

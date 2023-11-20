@@ -22,4 +22,7 @@
 /********************** IMU ************************/
 #define YAW_SCALING_FACTOR 26.54
 
+#define PID_DELAY_MS 1
+
+
 #endif
