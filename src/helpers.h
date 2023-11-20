@@ -3,4 +3,9 @@
 
 bool isButtonPressed();
 
+bool isOverBullsEye(Adafruit_TCS34725* leftColour,
+                    Adafruit_TCS34725* rightColour);
+
+
+
 #endif

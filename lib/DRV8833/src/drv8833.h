@@ -23,9 +23,13 @@ class DRV8833
 
     void stop();
 
+    float getCurrentSpeed();
+
     private:
     uint32_t _in1;
     uint32_t _in2;
+
+    float currentSpeed;
     
     void drive_forward(float speedPercent);
     void drive_reverse(float speedPercent);

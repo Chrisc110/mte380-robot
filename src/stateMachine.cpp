@@ -17,9 +17,16 @@ extern MPU6050 imu;
 
 
 #define PID_DELAY_MS 1
+#define LEFT_MIN_SPEED 63.0f
+#define RIGHT_MIN_SPEED 64.0f
+#define LEFT_MAX_SPEED 75.0f
+#define RIGHT_MAX_SPEED 76.0f
 
 state_e state = IDLE;
 uint32_t startTimeMs = 0;
+float leftBaseSpeed = LEFT_MIN_SPEED;
+float rightBaseSpeed = RIGHT_MIN_SPEED;
+
 
 void runStateMachine()
 {
@@ -65,36 +72,26 @@ void idleState()
 void initialApproachState()
 {
     const uint32_t END_INITIAL_APPROACH_TIME = 3000;
-    const float kp = 0;
-    const float ki = 0;
-    const float kd = 0;
-    const float leftMaxSpeed = 75.0;
-    const float rightMaxSpeed = 76.0f;
-
-    /*
-        NOTE: these variables are marked as static which means it retains
-        its value between function calls, so the values do not reset to
-        what it is intialized to below.  
-    */
-    static float leftBaseSpeed = 63.0f;
-    static float rightBaseSpeed = 64.0f;
+    const float KP = 0.22;
+    const float KD = 0;
+    const float KI = 0.0015;
     
     //get error
     float error = getError(&leftColour, &rightColour);
 
     //run PID
-    float controlSignal = runPID(error,  kp, ki, kd);
+    float controlSignal = runPID(error,  KP, KI, KD);
 
     //adjust motor speed
     updateMotorSpeed(&leftMotor, &rightMotor, leftBaseSpeed, rightBaseSpeed, controlSignal);
 
     //ramping of motor speed
-    if (leftBaseSpeed < leftMaxSpeed) {leftBaseSpeed += 0.01;}
-    if (rightBaseSpeed < rightMaxSpeed) {rightBaseSpeed += 0.01;}
+    if (leftBaseSpeed < LEFT_MAX_SPEED) {leftBaseSpeed += 0.01;}
+    if (rightBaseSpeed < RIGHT_MAX_SPEED) {rightBaseSpeed += 0.01;}
 
     //delay 1ms
     if (millis() - startTimeMs > END_INITIAL_APPROACH_TIME)
-    {
+    {   
         state = FINAL_APPROACH;
     }
 
@@ -103,7 +100,29 @@ void initialApproachState()
 
 void finalApproachState()
 {
+    const float KP = 0.22;
+    const float KD = 0;
+    const float KI = 0.0015;
 
+    float error = getError(&leftColour, &rightColour);
+
+    //run PID
+    float controlSignal = runPID(error,  KP, KI, KD);
+
+    //adjust motor speed
+    updateMotorSpeed(&leftMotor, &rightMotor, leftBaseSpeed, rightBaseSpeed, controlSignal);
+    
+    if (leftBaseSpeed > LEFT_MIN_SPEED) {leftBaseSpeed -= 0.03;}
+    if (rightBaseSpeed > RIGHT_MIN_SPEED) {rightBaseSpeed -= 0.03;}
+
+    if (isOverBullsEye(&leftColour, &rightColour))
+    {
+        leftMotor.stop();
+        rightMotor.stop();
+        state = PICKUP;
+    }
+
+    delay(PID_DELAY_MS);
 }
 
 void pickupState()
