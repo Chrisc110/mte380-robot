@@ -78,11 +78,13 @@ void initialApproachState()
 {
     const uint32_t END_INITIAL_APPROACH_TIME_MS = 3000;
     const float KP = 0.22;
-    const float KD = 0;
-    const float KI = 0.0015;
+    const float KI = 0;
+    const float KD = 0.0015;
     
     //get error
     float error = getError(&leftColour, &rightColour);
+    Serial.print("Error: ");
+    Serial.println(error);
 
     //run PID
     float controlSignal = runPID(error,  KP, KI, KD);
@@ -105,10 +107,12 @@ void initialApproachState()
 void finalApproachState()
 {
     const float KP = 0.22;
-    const float KD = 0;
-    const float KI = 0.0015;
+    const float KI = 0;
+    const float KD = 0.0015;
 
     float error = getError(&leftColour, &rightColour);
+    Serial.print("Error: ");
+    Serial.println(error);
 
     //run PID
     float controlSignal = runPID(error,  KP, KI, KD);
@@ -131,7 +135,7 @@ void finalApproachState()
 
 void pickupState()
 {
-    servo.write(180);
+    // servo.write(180);
 }
 
 void dropoffState()
