@@ -138,10 +138,25 @@ void pickupState()
 
 void dropoffState()
 {
+    //move backwards
 
+    //rotate 90 degrees counter clockwise
+
+    //move forwards until you hit green
+
+    //release the lego man
+
+    //move backwards until red line
+
+    //move forwards a little bec colour sensor is at the front
+
+    // rotate 90 degrees counter clockwise
+
+    //switch to return to home state
+    state = RETURN_TO_HOME;
 }
 
 void returnToHomeState()
 {
-
+    state = IDLE;
 }
