@@ -13,8 +13,6 @@
 #define COL_SEN_GREEN 12
 #define COL_SEN_BLUE 13
 
-
-
 /******************** Motors ***********************/
 #define MOTOR1_IN1 3
 #define MOTOR1_IN2 6
@@ -23,5 +21,8 @@
 
 /********************** IMU ************************/
 #define YAW_SCALING_FACTOR 26.54
+
+#define PID_DELAY_MS 1
+
 
 #endif
