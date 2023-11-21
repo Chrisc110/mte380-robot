@@ -1,5 +1,4 @@
 #include <Wire.h>
-#include <ISL29125.h>
 #include <drv8833.h>
 #include <MPU6050.h>
 #include "defines.h"
