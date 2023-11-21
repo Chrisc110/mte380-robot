@@ -24,8 +24,8 @@ extern Servo servo;
 
 #define LEFT_MIN_SPEED 63.0f
 #define RIGHT_MIN_SPEED 64.0f
-#define LEFT_MAX_SPEED 68.0f
-#define RIGHT_MAX_SPEED 69.0f
+#define LEFT_MAX_SPEED 76.0f
+#define RIGHT_MAX_SPEED 75.0f
 
 state_e state = IDLE;
 uint32_t startTimeMs = 0;
@@ -76,12 +76,10 @@ void idleState()
 
 void initialApproachState()
 {
-    const uint32_t END_INITIAL_APPROACH_TIME_MS = 10000;
-    const float KP = 0.185;
+    const uint32_t END_INITIAL_APPROACH_TIME_MS = 3000;
+    const float KP = 0.22;
     const float KI = 0;
-    const float KD = 0.0021;
-    leftBaseSpeed = LEFT_MAX_SPEED;
-    rightBaseSpeed = RIGHT_MAX_SPEED;
+    const float KD = 0.0015;
     
     //get error
     float error = getError(&leftColour, &rightColour);
@@ -95,8 +93,8 @@ void initialApproachState()
     updateMotorSpeed(&leftMotor, &rightMotor, leftBaseSpeed, rightBaseSpeed, controlSignal);
 
     //ramping of motor speed
-    // if (leftBaseSpeed < LEFT_MAX_SPEED) {leftBaseSpeed += 0.1;}
-    // if (rightBaseSpeed < RIGHT_MAX_SPEED) {rightBaseSpeed += 0.1;}
+    if (leftBaseSpeed < LEFT_MAX_SPEED) {leftBaseSpeed += 0.1;}
+    if (rightBaseSpeed < RIGHT_MAX_SPEED) {rightBaseSpeed += 0.1;}
 
     if (millis() - startTimeMs > END_INITIAL_APPROACH_TIME_MS)
     {

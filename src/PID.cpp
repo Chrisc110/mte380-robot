@@ -43,7 +43,7 @@ void updateMotorSpeed(DRV8833* leftMotor,
 {
     if (controlSignal < 0.0f) // left motor off line
     {
-        leftMotor->drive(DRV8833_FORWARD, leftBaseSpeed + abs(controlSignal));
+        leftMotor->drive(DRV8833_FORWARD, leftBaseSpeed + 1.1*abs(controlSignal));
         rightMotor->drive(DRV8833_FORWARD, rightBaseSpeed);
     }
     else //right motor off line
