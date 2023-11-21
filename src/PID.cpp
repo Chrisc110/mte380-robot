@@ -7,7 +7,7 @@ float integral = 0;
 float getError(Adafruit_TCS34725* leftColour,
                Adafruit_TCS34725* rightColour)
 {
-    const float OFFSET = 10;
+    const float OFFSET = 8;
 
     float r1, g1, b1;
     float r2, g2, b2;
@@ -43,7 +43,7 @@ void updateMotorSpeed(DRV8833* leftMotor,
 {
     if (controlSignal < 0.0f) // left motor off line
     {
-        leftMotor->drive(DRV8833_FORWARD, leftBaseSpeed + 1.1 * abs(controlSignal));
+        leftMotor->drive(DRV8833_FORWARD, leftBaseSpeed + abs(controlSignal));
         rightMotor->drive(DRV8833_FORWARD, rightBaseSpeed);
     }
     else //right motor off line
