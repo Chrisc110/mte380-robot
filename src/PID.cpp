@@ -22,7 +22,11 @@ float runPID(float error,
              float ki,
              float kd)
 {
-
+    
+    /*
+        Note: integral is marked as static which means it keeps its value through function calls
+        so the value will not be reset to 0 with each call
+    */
     static float integral = 0;
     
     integral += error * PID_DELAY_MS;
