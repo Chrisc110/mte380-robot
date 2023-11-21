@@ -23,9 +23,9 @@ float runPID(float error,
              float ki,
              float kd)
 {   
-    integral += error * PID_DELAY_MS;
+    integral += error * (PID_DELAY_MS /1000.0f);
 
-    float derivative = (error - previousError) / PID_DELAY_MS;
+    float derivative = (error - previousError) / (PID_DELAY_MS / 1000.0f);
 
     float controlSignal = kp * error + ki * integral + kd * derivative;
 
