@@ -7,6 +7,7 @@
 #include "lineFollowing.h"
 #include "Adafruit_TCS34725.h"
 #include "stateMachine.h"
+#include "Servo.h"
 
 // Instantiate colour sensors: Please match colSen1 and motor1 to the same side!
 TwoWire leftWire(COL_SEN_SDA_1, COL_SEN_SCL_1);
@@ -21,6 +22,9 @@ DRV8833 rightMotor(MOTOR2_IN1, MOTOR2_IN2);
 
 // Instantiate IMU
 MPU6050 imu;
+
+// Gripper Servo
+Servo servo;
 
 void setup()
 {
@@ -64,6 +68,10 @@ void setup()
     success = false;
     Serial.println("IMU Initialization: FAILED");
   }
+
+  servo.attach(11);
+  servo.write (95);
+  Serial.println("Servo Motor Initialization: SUCCESSFUL");
 
   Serial.println("Motor 1 Initialization: SUCCESSFUL");
   Serial.println("Motor 2 Initialization: SUCCESSFUL");

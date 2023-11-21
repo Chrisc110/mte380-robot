@@ -1,4 +1,6 @@
 #include "stateMachine.h"
+#include "Arduino.h"
+#include "Servo.h"
 #include "helpers.h"
 #include "PID.h"
 #include "defines.h"
@@ -14,6 +16,9 @@ extern DRV8833 rightMotor;
 
 // Instantiate IMU
 extern MPU6050 imu;
+
+// Instantiate Servo
+extern Servo servo;
 /*************************************************/
 
 
@@ -126,7 +131,7 @@ void finalApproachState()
 
 void pickupState()
 {
-
+    servo.write(180);
 }
 
 void dropoffState()
