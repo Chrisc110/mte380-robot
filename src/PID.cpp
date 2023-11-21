@@ -2,6 +2,7 @@
 #include "defines.h"
 
 float previousError = 0;
+float integral = 0;
 
 float getError(Adafruit_TCS34725* leftColour,
                Adafruit_TCS34725* rightColour)
@@ -21,14 +22,7 @@ float runPID(float error,
              float kp,
              float ki,
              float kd)
-{
-    
-    /*
-        Note: integral is marked as static which means it keeps its value through function calls
-        so the value will not be reset to 0 with each call
-    */
-    static float integral = 0;
-    
+{   
     integral += error * PID_DELAY_MS;
 
     float derivative = (error - previousError) / PID_DELAY_MS;

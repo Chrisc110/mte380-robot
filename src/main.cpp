@@ -4,7 +4,6 @@
 #include <MPU6050.h>
 #include "defines.h"
 #include "math.h"
-#include "lineFollowing.h"
 #include "Adafruit_TCS34725.h"
 #include "stateMachine.h"
 #include "Servo.h"
