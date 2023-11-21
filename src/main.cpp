@@ -68,7 +68,6 @@ void setup()
   }
 
   servo.attach(11);
-  servo.write (95);
   Serial.println("Servo Motor Initialization: SUCCESSFUL");
 
   Serial.println("Motor 1 Initialization: SUCCESSFUL");

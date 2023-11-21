@@ -24,8 +24,8 @@ extern Servo servo;
 
 #define LEFT_MIN_SPEED 63.0f
 #define RIGHT_MIN_SPEED 64.0f
-#define LEFT_MAX_SPEED 76.0f
-#define RIGHT_MAX_SPEED 75.0f
+#define LEFT_MAX_SPEED 75.0f
+#define RIGHT_MAX_SPEED 76.0f
 
 state_e state = IDLE;
 uint32_t startTimeMs = 0;
@@ -83,8 +83,6 @@ void initialApproachState()
     
     //get error
     float error = getError(&leftColour, &rightColour);
-    Serial.print("Error: ");
-    Serial.println(error);
 
     //run PID
     float controlSignal = runPID(error, KP, KI, KD);
@@ -106,13 +104,11 @@ void initialApproachState()
 
 void finalApproachState()
 {
-    const float KP = 0.22;
+    const float KP = 0.26;
     const float KI = 0;
     const float KD = 0.0015;
 
     float error = getError(&leftColour, &rightColour);
-    Serial.print("Error: ");
-    Serial.println(error);
 
     //run PID
     float controlSignal = runPID(error,  KP, KI, KD);
@@ -135,7 +131,9 @@ void finalApproachState()
 
 void pickupState()
 {
-    // servo.write(180);
+    Serial.print("PICKUP");
+    servo.write(180);
+    state = DROPOFF;
 }
 
 void dropoffState()
