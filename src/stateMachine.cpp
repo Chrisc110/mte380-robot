@@ -107,9 +107,9 @@ void initialApproachState()
 
 void finalApproachState()
 {
-    const float KP = 0.26;
+    const float KP = 0.265;
     const float KI = 0;
-    const float KD = 0.0015;
+    const float KD = 0.00155;
 
     float error = getError(&leftColour, &rightColour);
 
@@ -150,10 +150,10 @@ void dropoffState()
     // move backwards
     leftMotor.drive(DRV8833_REVERSE, 65.0f);
     rightMotor.drive(DRV8833_REVERSE, 65.0f);
-    delay(1500); // 1500 speed and 65 deg
+    delay(1500);
 
     // rotate 90 degrees counter clockwise
-    rotateInPlace(COUNTER_CLOCKWISE, 65.0f, &imu, &leftMotor, &rightMotor);
+    rotateInPlace(COUNTER_CLOCKWISE, 70.0f, &imu, &leftMotor, &rightMotor);
 
     // move forwards until you hit green
     leftMotor.drive(DRV8833_FORWARD, 65.0f);
