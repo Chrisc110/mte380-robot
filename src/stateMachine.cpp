@@ -21,11 +21,6 @@ extern MPU6050 imu;
 extern Servo servo;
 /*************************************************/
 
-#define LEFT_MIN_SPEED 63.0f
-#define RIGHT_MIN_SPEED 64.0f
-#define LEFT_MAX_SPEED 74.0f
-#define RIGHT_MAX_SPEED 75.0f
-
 state_e state = IDLE;
 uint32_t startTimeMs = 0;
 float leftBaseSpeed = LEFT_MIN_SPEED;
