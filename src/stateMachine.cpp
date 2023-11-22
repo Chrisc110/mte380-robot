@@ -148,40 +148,48 @@ void pickupState()
 void dropoffState()
 {
     // move backwards
-    leftMotor.drive(DRV8833_REVERSE, 65.0f);
-    rightMotor.drive(DRV8833_REVERSE, 65.0f);
-    delay(1500);
+    leftMotor.drive(DRV8833_REVERSE, 75.0f);
+    rightMotor.drive(DRV8833_REVERSE, 76.0f);
+    delay(500);
 
     // rotate counter clockwise
-    rotateInPlace(COUNTER_CLOCKWISE, 70.0f, &imu, &leftMotor, &rightMotor);
+    rotateInPlace(COUNTER_CLOCKWISE, 55.0f, &imu, &leftMotor, &rightMotor);
 
     // move forwards until you hit green
-    leftMotor.drive(DRV8833_FORWARD, 65.0f);
-    rightMotor.drive(DRV8833_FORWARD, 65.0f);
+    leftMotor.drive(DRV8833_FORWARD, 75.0f);
+    rightMotor.drive(DRV8833_FORWARD, 76.0f);
     while (!isOverSafezone(&leftColour, &rightColour)){}
 
     //move back a little
-    leftMotor.drive(DRV8833_REVERSE, 65.0f);
-    rightMotor.drive(DRV8833_REVERSE, 65.0f);
-    delay(200);
+    leftMotor.drive(DRV8833_REVERSE, 75.0f);
+    rightMotor.drive(DRV8833_REVERSE, 76.0f);
+    delay(250);
 
     // release the lego man
     leftMotor.stop();
     rightMotor.stop();
+    delay(100);
     servo.write(100);
+    delay(1000);
 
     // move backwards until red line
-    leftMotor.drive(DRV8833_REVERSE, 65.0f);
-    rightMotor.drive(DRV8833_REVERSE, 65.0f);
+    leftMotor.drive(DRV8833_REVERSE, 68.0f);
+    rightMotor.drive(DRV8833_REVERSE, 69.0f);
     while (!isOverLine(&leftColour, &rightColour)){}
 
     // move forwards a little bec colour sensor is at the front
     leftMotor.drive(DRV8833_FORWARD, 65.0f);
     rightMotor.drive(DRV8833_FORWARD, 65.0f);
-    delay(200);
+    delay(300);
 
     // rotate counter clockwise
-    rotateInPlace(COUNTER_CLOCKWISE, 95.0f, &imu, &leftMotor, &rightMotor);
+    leftMotor.stop();
+    rightMotor.stop();
+    delay(200);
+    rotateInPlace(COUNTER_CLOCKWISE, 80.0f, &imu, &leftMotor, &rightMotor);
+    leftMotor.drive(DRV8833_REVERSE, 68.0f);
+    rightMotor.drive(DRV8833_REVERSE, 69.0f);
+    while (!isOverLine(&leftColour, &rightColour)){}
 
     // switch to return to home state
     state = RETURN_TO_HOME;
