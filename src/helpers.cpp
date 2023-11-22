@@ -18,28 +18,79 @@ bool isButtonPressed()
   }
 }
 
-bool isOverBullsEye(Adafruit_TCS34725* leftColour,
-                    Adafruit_TCS34725* rightColour)
+bool isOverBullsEye(Adafruit_TCS34725 *leftColour,
+                    Adafruit_TCS34725 *rightColour)
 {
-    float r1, g1, b1;
-    float r2, g2, b2;
+  float r1, g1, b1;
+  float r2, g2, b2;
 
-    leftColour->getRGB(&r1, &g1, &b1);
-    rightColour->getRGB(&r2, &g2, &b2);
+  leftColour->getRGB(&r1, &g1, &b1);
+  rightColour->getRGB(&r2, &g2, &b2);
 
-    if (110 < r1 && r1 < 130 && 70 < g1 && g1 < 85 && 50 < b1 && b1 < 80)
-    {
-        return true;
-    }
+  if (110 < r1 && r1 < 130 && 70 < g1 && g1 < 85 && 50 < b1 && b1 < 80)
+  {
+    return true;
+  }
 
-    return false;
+  return false;
+}
+
+bool isOverSafezone(Adafruit_TCS34725 *leftColour,
+                    Adafruit_TCS34725 *rightColour)
+{
+  float r1, g1, b1;
+  float r2, g2, b2;
+
+  leftColour->getRGB(&r1, &g1, &b1);
+  rightColour->getRGB(&r2, &g2, &b2);
+
+  if (95 < r1 && r1 < 110 && 85 < g1 && g1 < 95)
+  {
+    return true;
+  }
+
+  return false;
+}
+
+bool isOverHome(Adafruit_TCS34725 *leftColour,
+                Adafruit_TCS34725 *rightColour)
+{
+  float r1, g1, b1;
+  float r2, g2, b2;
+
+  leftColour->getRGB(&r1, &g1, &b1);
+  rightColour->getRGB(&r2, &g2, &b2);
+
+  if (165 < r1 && r1 < 185 && 165 < r2 && r2 < 185 && g1 < 65 && g2 < 55)
+  {
+    return true;
+  }
+
+  return false;
+}
+
+bool isOverLine(Adafruit_TCS34725 *leftColour,
+                Adafruit_TCS34725 *rightColour)
+{
+  float r1, g1, b1;
+  float r2, g2, b2;
+
+  leftColour->getRGB(&r1, &g1, &b1);
+  rightColour->getRGB(&r2, &g2, &b2);
+
+  if (r1 < 145 && r2 > 155 && g1 < 75 && g2 < 75)
+  {
+    return true;
+  }
+
+  return false;
 }
 
 void rotateInPlace(rotation_dir_e dir,
                    float deg,
-                   MPU6050* imu,
-                   DRV8833* leftMotor,
-                   DRV8833* rightMotor)
+                   MPU6050 *imu,
+                   DRV8833 *leftMotor,
+                   DRV8833 *rightMotor)
 {
   const float LEFT_MOTOR_SPEED = 66.0f;
   const float RIGHT_MOTOR_SPEED = 66.0f;
@@ -66,7 +117,7 @@ void rotateInPlace(rotation_dir_e dir,
 
     yaw = yaw + norm.ZAxis * TIME_STEP;
 
-    delay((TIME_STEP*1000) - (millis() - timer));
+    delay((TIME_STEP * 1000) - (millis() - timer));
   }
 
   leftMotor->stop();

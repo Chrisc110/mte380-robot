@@ -27,7 +27,7 @@ Servo servo;
 void setup()
 {
   bool success = true;
-  
+
   // Initialize serial communication
   Serial.begin(9600);
 
@@ -54,12 +54,11 @@ void setup()
     Serial.println("Colour Sensor 2 Initialization: FAILED");
   }
 
-  //NOTE: IMU must be initialized AFTER colour sensor
+  // NOTE: IMU must be initialized AFTER colour sensor
   if (imu.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G))
-  { 
+  {
     imu.calibrateGyro();
     Serial.println("IMU Initialization: SUCCESSFUL");
-    
   }
   else
   {
@@ -81,7 +80,7 @@ void setup()
   }
   else
   {
-    while(1)
+    while (1)
     {
       // Toggling light means FAILED
       digitalToggle(LED_BUILTIN);
@@ -93,5 +92,25 @@ void setup()
 // Read sensor values for each color and print them to serial monitor
 void loop()
 {
+  // float r1, g1, b1;
+  // float r2, g2, b2;
+
+  // leftColour.getRGB(&r1, &g1, &b1);
+  // rightColour.getRGB(&r2, &g2, &b2);
+
+  // Serial.print("Red 1: ");
+  // Serial.println(r1);
+  // Serial.print("Green 1: ");
+  // Serial.println(g1);
+  // Serial.print("Blue 1: ");
+  // Serial.println(b1);
+  // Serial.print("Red 2: ");
+  // Serial.println(r2);
+  // Serial.print("Green 2: ");
+  // Serial.println(g2);
+  // Serial.print("Blue 2: ");
+  // Serial.println(b2);
+  // Serial.println();
+  // delay(500);
   runStateMachine();
 }
