@@ -152,15 +152,18 @@ void dropoffState()
     rightMotor.drive(DRV8833_REVERSE, 65.0f);
     delay(1500);
 
-    // rotate 90 degrees counter clockwise
+    // rotate counter clockwise
     rotateInPlace(COUNTER_CLOCKWISE, 70.0f, &imu, &leftMotor, &rightMotor);
 
     // move forwards until you hit green
     leftMotor.drive(DRV8833_FORWARD, 65.0f);
     rightMotor.drive(DRV8833_FORWARD, 65.0f);
-    while (!isOverSafezone(&leftColour, &rightColour))
-    {
-    }
+    while (!isOverSafezone(&leftColour, &rightColour)){}
+
+    //move back a little
+    leftMotor.drive(DRV8833_REVERSE, 65.0f);
+    rightMotor.drive(DRV8833_REVERSE, 65.0f);
+    delay(200);
 
     // release the lego man
     leftMotor.stop();
@@ -170,17 +173,15 @@ void dropoffState()
     // move backwards until red line
     leftMotor.drive(DRV8833_REVERSE, 65.0f);
     rightMotor.drive(DRV8833_REVERSE, 65.0f);
-    while (!isOverLine(&leftColour, &rightColour))
-    {
-    }
+    while (!isOverLine(&leftColour, &rightColour)){}
 
     // move forwards a little bec colour sensor is at the front
     leftMotor.drive(DRV8833_FORWARD, 65.0f);
     rightMotor.drive(DRV8833_FORWARD, 65.0f);
     delay(200);
 
-    // rotate 90 degrees counter clockwise
-    rotateInPlace(COUNTER_CLOCKWISE, 100.0f, &imu, &leftMotor, &rightMotor);
+    // rotate counter clockwise
+    rotateInPlace(COUNTER_CLOCKWISE, 95.0f, &imu, &leftMotor, &rightMotor);
 
     // switch to return to home state
     state = RETURN_TO_HOME;
