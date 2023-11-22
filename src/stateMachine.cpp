@@ -23,8 +23,8 @@ extern Servo servo;
 
 #define LEFT_MIN_SPEED 63.0f
 #define RIGHT_MIN_SPEED 64.0f
-#define LEFT_MAX_SPEED 75.0f
-#define RIGHT_MAX_SPEED 76.0f
+#define LEFT_MAX_SPEED 74.0f
+#define RIGHT_MAX_SPEED 75.0f
 
 state_e state = IDLE;
 uint32_t startTimeMs = 0;
@@ -150,15 +150,14 @@ void dropoffState()
     // move backwards
     leftMotor.drive(DRV8833_REVERSE, 65.0f);
     rightMotor.drive(DRV8833_REVERSE, 65.0f);
-    delay(1700);
+    delay(1500); // 1500 speed and 65 deg
 
     // rotate 90 degrees counter clockwise
-    rotateInPlace(COUNTER_CLOCKWISE, 70.0f, &imu, &leftMotor, &rightMotor);
+    rotateInPlace(COUNTER_CLOCKWISE, 65.0f, &imu, &leftMotor, &rightMotor);
 
     // move forwards until you hit green
     leftMotor.drive(DRV8833_FORWARD, 65.0f);
     rightMotor.drive(DRV8833_FORWARD, 65.0f);
-    //  TODO: change to isOverSafezone
     while (!isOverSafezone(&leftColour, &rightColour))
     {
     }

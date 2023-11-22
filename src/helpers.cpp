@@ -61,7 +61,7 @@ bool isOverHome(Adafruit_TCS34725 *leftColour,
   leftColour->getRGB(&r1, &g1, &b1);
   rightColour->getRGB(&r2, &g2, &b2);
 
-  if (165 < r1 && r1 < 180 && 165 < r2 && r2 < 180 && g1 < 65 && g2 < 55)
+  if (165 < r1 && r1 < 185 && 165 < r2 && r2 < 185 && g1 < 65 && g2 < 55)
   {
     return true;
   }
