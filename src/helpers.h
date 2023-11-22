@@ -9,6 +9,12 @@ bool isButtonPressed();
 
 bool isOverBullsEye(Adafruit_TCS34725* leftColour,
                     Adafruit_TCS34725* rightColour);
+bool isOverHome(Adafruit_TCS34725* leftColour,
+                    Adafruit_TCS34725* rightColour);
+bool isOverSafezone(Adafruit_TCS34725* leftColour,
+                    Adafruit_TCS34725* rightColour);
+bool isOverLine(Adafruit_TCS34725* leftColour,
+                    Adafruit_TCS34725* rightColour);
 
 typedef enum{
   CLOCKWISE = 0,
