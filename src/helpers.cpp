@@ -27,7 +27,7 @@ bool isOverBullsEye(Adafruit_TCS34725 *leftColour,
   leftColour->getRGB(&r1, &g1, &b1);
   rightColour->getRGB(&r2, &g2, &b2);
 
-  if (110 < r1 && r1 < 130 && 70 < g1 && g1 < 85 && 50 < b1 && b1 < 80)
+  if (85< r1 && r1 < 130 && 70 < g1 && g1 < 85 && 60 < b1 && b1 < 100)
   {
     return true;
   }

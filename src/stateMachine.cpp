@@ -68,8 +68,8 @@ void idleState()
 
 void initialApproachState()
 {
-    const uint32_t END_INITIAL_APPROACH_TIME_MS = 2000;
-    const float KP = 0.15;
+    const uint32_t END_INITIAL_APPROACH_TIME_MS = 2200;
+    const float KP = 0.16;
     const float KI = 0;
     const float KD = 0.0020;
 
@@ -102,9 +102,9 @@ void initialApproachState()
 
 void finalApproachState()
 {
-    const float KP = 0.15;
+    const float KP = 0.20;
     const float KI = 0;
-    const float KD = 0.00155;
+    const float KD = 0.0017;
 
     float error = getError(&leftColour, &rightColour);
 
@@ -148,7 +148,7 @@ void dropoffState()
     delay(600);
 
     // rotate 90 degrees counter clockwise
-    rotateInPlace(COUNTER_CLOCKWISE, 65.0f, &imu, &leftMotor, &rightMotor);
+    rotateInPlace(COUNTER_CLOCKWISE, 60.0f, &imu, &leftMotor, &rightMotor);
 
     // move forwards until you hit green
     leftMotor.drive(DRV8833_FORWARD, 70.0f);
@@ -160,7 +160,7 @@ void dropoffState()
     // move back a bit
     leftMotor.drive(DRV8833_REVERSE, 70.0f);
     rightMotor.drive(DRV8833_REVERSE, 72.0f);
-    delay(200);
+    delay(250);
 
     // release the lego man
     leftMotor.stop();

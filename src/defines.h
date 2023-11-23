@@ -26,7 +26,7 @@
 
 #define LEFT_MIN_SPEED 63.0f
 #define RIGHT_MIN_SPEED 65.0f
-#define LEFT_MAX_SPEED 71.0f
-#define RIGHT_MAX_SPEED 73.0f
+#define LEFT_MAX_SPEED 73.0f
+#define RIGHT_MAX_SPEED 75.0f
 
 #endif
