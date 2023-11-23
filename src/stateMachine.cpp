@@ -68,10 +68,10 @@ void idleState()
 
 void initialApproachState()
 {
-    const uint32_t END_INITIAL_APPROACH_TIME_MS = 2200;
-    const float KP = 0.16;
+    const uint32_t END_INITIAL_APPROACH_TIME_MS = 3400;
+    const float KP = 0.18;
     const float KI = 0;
-    const float KD = 0.0020;
+    const float KD = 0.0025;
 
     // get error
     float error = getError(&leftColour, &rightColour);
@@ -94,6 +94,11 @@ void initialApproachState()
 
     if (millis() - startTimeMs > END_INITIAL_APPROACH_TIME_MS)
     {
+        leftMotor.stop();
+        rightMotor.stop();
+        leftBaseSpeed = LEFT_MIN_SPEED;
+        rightBaseSpeed = RIGHT_MIN_SPEED;
+        delay(350);
         state = FINAL_APPROACH;
     }
 
@@ -102,7 +107,7 @@ void initialApproachState()
 
 void finalApproachState()
 {
-    const float KP = 0.20;
+    const float KP = 0.23;
     const float KI = 0;
     const float KD = 0.0017;
 
