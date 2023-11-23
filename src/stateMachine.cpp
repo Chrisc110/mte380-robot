@@ -68,10 +68,10 @@ void idleState()
 
 void initialApproachState()
 {
-    const uint32_t END_INITIAL_APPROACH_TIME_MS = 3000;
-    const float KP = 0.22;
+    const uint32_t END_INITIAL_APPROACH_TIME_MS = 2000;
+    const float KP = 0.15;
     const float KI = 0;
-    const float KD = 0.0015;
+    const float KD = 0.0020;
 
     // get error
     float error = getError(&leftColour, &rightColour);
@@ -102,7 +102,7 @@ void initialApproachState()
 
 void finalApproachState()
 {
-    const float KP = 0.265;
+    const float KP = 0.15;
     const float KI = 0;
     const float KD = 0.00155;
 
@@ -143,48 +143,45 @@ void pickupState()
 void dropoffState()
 {
     // move backwards
-    leftMotor.drive(DRV8833_REVERSE, 75.0f);
-    rightMotor.drive(DRV8833_REVERSE, 76.0f);
-    delay(500);
+    leftMotor.drive(DRV8833_REVERSE, 70.0f);
+    rightMotor.drive(DRV8833_REVERSE, 72.0f);
+    delay(600);
 
-    // rotate counter clockwise
-    rotateInPlace(COUNTER_CLOCKWISE, 55.0f, &imu, &leftMotor, &rightMotor);
+    // rotate 90 degrees counter clockwise
+    rotateInPlace(COUNTER_CLOCKWISE, 65.0f, &imu, &leftMotor, &rightMotor);
 
     // move forwards until you hit green
-    leftMotor.drive(DRV8833_FORWARD, 75.0f);
-    rightMotor.drive(DRV8833_FORWARD, 76.0f);
-    while (!isOverSafezone(&leftColour, &rightColour)){}
+    leftMotor.drive(DRV8833_FORWARD, 70.0f);
+    rightMotor.drive(DRV8833_FORWARD, 72.0f);
+    while (!isOverSafezone(&leftColour, &rightColour))
+    {
+    }
 
-    //move back a little
-    leftMotor.drive(DRV8833_REVERSE, 75.0f);
-    rightMotor.drive(DRV8833_REVERSE, 76.0f);
-    delay(250);
+    // move back a bit
+    leftMotor.drive(DRV8833_REVERSE, 70.0f);
+    rightMotor.drive(DRV8833_REVERSE, 72.0f);
+    delay(200);
 
     // release the lego man
     leftMotor.stop();
     rightMotor.stop();
-    delay(100);
     servo.write(100);
     delay(1000);
 
     // move backwards until red line
-    leftMotor.drive(DRV8833_REVERSE, 68.0f);
-    rightMotor.drive(DRV8833_REVERSE, 69.0f);
-    while (!isOverLine(&leftColour, &rightColour)){}
+    leftMotor.drive(DRV8833_REVERSE, 63.0f);
+    rightMotor.drive(DRV8833_REVERSE, 65.0f);
+    while (!isOverLine(&leftColour, &rightColour))
+    {
+    }
 
     // move forwards a little bec colour sensor is at the front
-    leftMotor.drive(DRV8833_FORWARD, 65.0f);
+    leftMotor.drive(DRV8833_FORWARD, 63.0f);
     rightMotor.drive(DRV8833_FORWARD, 65.0f);
-    delay(300);
-
-    // rotate counter clockwise
-    leftMotor.stop();
-    rightMotor.stop();
     delay(200);
-    rotateInPlace(COUNTER_CLOCKWISE, 80.0f, &imu, &leftMotor, &rightMotor);
-    leftMotor.drive(DRV8833_REVERSE, 68.0f);
-    rightMotor.drive(DRV8833_REVERSE, 69.0f);
-    while (!isOverLine(&leftColour, &rightColour)){}
+
+    // rotate 90 degrees counter clockwise
+    rotateInPlace(COUNTER_CLOCKWISE, 95.0f, &imu, &leftMotor, &rightMotor);
 
     // switch to return to home state
     state = RETURN_TO_HOME;

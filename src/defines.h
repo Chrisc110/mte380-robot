@@ -25,8 +25,8 @@
 #define PID_DELAY_MS 1
 
 #define LEFT_MIN_SPEED 63.0f
-#define RIGHT_MIN_SPEED 64.0f
-#define LEFT_MAX_SPEED 74.0f
-#define RIGHT_MAX_SPEED 75.0f
+#define RIGHT_MIN_SPEED 65.0f
+#define LEFT_MAX_SPEED 71.0f
+#define RIGHT_MAX_SPEED 73.0f
 
 #endif
