@@ -181,7 +181,7 @@ void dropoffState()
     delay(200);
 
     // rotate 90 degrees counter clockwise
-    rotateInPlace(COUNTER_CLOCKWISE, 95.0f, &imu, &leftMotor, &rightMotor);
+    rotateInPlace(COUNTER_CLOCKWISE, 90.0f, &imu, &leftMotor, &rightMotor);
 
     // switch to return to home state
     state = RETURN_TO_HOME;
