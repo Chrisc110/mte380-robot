@@ -102,7 +102,7 @@ void initialApproachState()
 
 void finalApproachState()
 {
-    const float KP = 0.20;
+    const float KP = 0.22;
     const float KI = 0;
     const float KD = 0.0017;
 
